@@ -3,9 +3,9 @@
 #---DistanceMatrix
 #EMPPairedEndSequences
 #EMPSingleEndSequences
-#FeatureData[AlignedSequence]
+#—FeatureData[AlignedSequence]
 #FeatureData[PairedEndSequence]
-#FeatureData[Sequence]
+#—--FeatureData[Sequence]
 #---FeatureData[Taxonomy]
 #---FeatureTable[Balance]
 #---FeatureTable[Composition]

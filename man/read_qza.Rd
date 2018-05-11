@@ -21,6 +21,8 @@ a named list of the following objects:
 \item artifact$type - the semantic type of the object (ex FeatureData[Sequence])
 \item artifact$format - the format of the qiime artifact
 \item artifact$provenance - information tracking how the object was created
+\item artifact$contents - a table of all the files contained within the artifact and their file size
+\item artifact$version - the reported version for the artifact, a warning error may be thrown if a new version is seen
 }
 }
 \description{

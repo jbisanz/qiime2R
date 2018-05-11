@@ -5,5 +5,5 @@ importFrom(biomformat, biom_data)
 importFrom(biomformat, read_biom)
 importFrom(ape, read.tree)
 importFrom(Biostrings, readDNAStringSet)
-
+importFrom(Biostrings, readDNAMultipleAlignment)
 export(read_qza)
