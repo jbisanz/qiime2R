@@ -14,4 +14,4 @@ Imports:
     ape (>= 4.1),
     Biostrings (>= 2.42.1),
     biomformat (>= 1.6.0),
-    phyloseq (>= 1.22.3)
+    phyloseq (>= 1.20.0)
