@@ -1,0 +1,16 @@
+Package: qiime2R
+Type: Package
+Title: qiime2R
+Version: 0.1
+Maintainer: Jordan Bisanz <jordan.bisanz@gmail.com>
+Description: Importing QIIME2 artifacts into R sessions.
+License: None
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
+Imports:
+    ape (>= 4.1),
+    Biostrings (>= 2.42.1),
+    biomformat (>= 1.6.0)
