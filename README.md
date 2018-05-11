@@ -11,25 +11,8 @@ This package is trying to simplify the process of getting the artifact into R wi
 * [yaml](https://cran.r-project.org/web/packages/yaml/index.html)
 * [BioStrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html)
 
-### Supported semantic types
-
-* FeatureTable[Balance]
-* FeatureTable[Composition]
-* FeatureTable[Frequency]
-* FeatureTable[PresenceAbsence]
-* FeatureTable[RelativeFrequency]
-* Phylogeny[Rooted]
-* Phylogeny[Unrooted]
-* DistanceMatrix
-* DeblurStats
-* QualityFilterStats
-* FeatureData[Taxonomy]
-* PCoAResults
-* FeatureData[AlignedSequence]
-* FeatureData[Sequence]
-
 ### To do
-Improve support for more/new semanatic types and include a function for visualizing and/or summarizing providence in an intelligble format.
+Include a function for visualizing and/or summarizing providence in an intelligble format.
 
 ### Example usage
 
