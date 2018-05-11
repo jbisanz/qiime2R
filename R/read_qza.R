@@ -59,7 +59,8 @@ if(grepl("FeatureTable\\[[A-z]+\\]", artifact$type)){ #FeatureTable[Balance]|Fea
   artifact$data<-data.frame(files=list.files(paste0(tmp,"/", artifact$uuid,"/data")))
   artifact$data$size<-format(sapply(artifact$data$files, function(x){file.size(paste0(tmp,"/",artifact$uuid,"/data/",x))}, simplify = T))
 } else {
-  message("Semantic type not supported, only provenance is being imported.")
+  message("Semantic type not supported, only a list of data files and provenance is being imported.")
+  artifact$data<-list.files(paste0(tmp,"/",artifact$uuid, "/data"))
 }
 
 pfiles<-paste0(tmp,"/", grep("..+provenance/..+action.yaml", unpacked, value=T))
