@@ -26,15 +26,15 @@ if(missing(tmp)){tmp="/tmp/"}
 if(missing(file)){stop("Path to artifact (.qza) not provided")}
 if(missing(rm)){rm=T} #remove the decompressed object from tmp
 
-untar(file, exdir=tmp)
-unpacked<-untar(file, exdir=tmp, list=T)
+unzip(file, exdir=tmp)
+unpacked<-unzip(file, exdir=tmp, list=T)
 
-artifact<-read_yaml(paste0(tmp,"/", grep(paste0(gsub("/..+","", unpacked[1]),"/metadata.yaml"), unpacked, value=T) )) #start by loading in the metadata not assuming it will be first file listed
+artifact<-read_yaml(paste0(tmp,"/", paste0(gsub("/..+","", unpacked$Name[1]),"/metadata.yaml"))) #start by loading in the metadata not assuming it will be first file listed
 artifact$contents<-data.frame(files=unpacked)
 artifact$contents$size=sapply(paste0(tmp, "/", artifact$contents$files), file.size)
 artifact$version=read.table(paste0(tmp,"/",artifact$uuid, "/VERSION"))
 
-if(sum(artifact$version$V2==c("2","4","2018.4.0"))!=3){warning("It is unclear if current artifact version is supported, errors may occur in import...")}#check version and throw warning if new format
+if(sum(artifact$version$V2==c("2","4","2018.4.0"))!=3){warning("It is unclear if current artifact version is supported, errors may occur in import... please contact jordan.bisanz@gmail.com to report if your import fails and send the qza file")}#check version and throw warning if new format
 
   #get data dependent on format
 if(grepl("BIOMV", artifact$format)){
@@ -75,9 +75,9 @@ if(grepl("BIOMV", artifact$format)){
   artifact$data<-list.files(paste0(tmp,"/",artifact$uuid, "/data"))
 }
 
-pfiles<-paste0(tmp,"/", grep("..+provenance/..+action.yaml", unpacked, value=T))
+pfiles<-paste0(tmp,"/", grep("..+provenance/..+action.yaml", unpacked$Name, value=T))
 artifact$provenance<-lapply(pfiles, read_yaml)
-names(artifact$provenance)<-grep("..+provenance/..+action.yaml", unpacked, value=T)
+names(artifact$provenance)<-grep("..+provenance/..+action.yaml", unpacked$Name, value=T)
 if(rm==T){unlink(paste0(tmp,"/", artifact$uuid), recursive=T)}
 return(artifact)
 }

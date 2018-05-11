@@ -11,25 +11,14 @@ This package is trying to simplify the process of getting the artifact into R wi
 * [yaml](https://cran.r-project.org/web/packages/yaml/index.html)
 * [BioStrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html)
 
-### Supported semantic types
-
-* FeatureTable[Balance]
-* FeatureTable[Composition]
-* FeatureTable[Frequency]
-* FeatureTable[PresenceAbsence]
-* FeatureTable[RelativeFrequency]
-* Phylogeny[Rooted]
-* Phylogeny[Unrooted]
-* DistanceMatrix
-* DeblurStats
-* QualityFilterStats
-* FeatureData[Taxonomy]
-* PCoAResults
-* FeatureData[AlignedSequence]
-* FeatureData[Sequence]
-
 ### To do
-Improve support for more/new semanatic types and include a function for visualizing and/or summarizing providence in an intelligble format.
+Include a function for visualizing and/or summarizing providence in an intelligble format.
+
+### Known issues
+The artifact metadata import may fail on windows PCs due to an issue parsing `.yaml` manifests.
+
+Please report any issues to [jordan.bisanz@gmail.com](mailto:jordan.bisanz@gmail.com). Community contributions to coding would be appreciated!
+
 
 ### Example usage
 
@@ -129,7 +118,19 @@ files	size
 ```
 The provenance is supplied as a nested set of lists but it can be difficult to interpret at this point: `otus$provenance`.
 
-Here is how it could be imported to form a phyloseq object
+You could the supplied wrapper script `qza_to_phyloseq`
+```
+physeq<-qza_to_phyloseq("table.qza","rooted-tree.qza","taxonomy.qza", "sample-metadata.tsv")
+physeq
+## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 759 taxa and 34 samples ]
+## sample_data() Sample Data:       [ 34 samples by 10 sample variables ]
+## tax_table()   Taxonomy Table:    [ 759 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 759 tips and 757 internal nodes ]
+```
+
+OR you could manually build it:
+
 ```
 library(phyloseq)
 tree<-read_qza("~/QIIME2/mvpics/rooted-tree.qza")
@@ -145,11 +146,11 @@ metadata<-metadata[-1,]#remove the second line that specifies the data type
 physeq<-phyloseq(otu_table(otus$data, taxa_are_rows = T), phy_tree(tree$data), tax_table(tax_table), sample_data(metadata))
 
 physeq
-phyloseq-class experiment-level object
-otu_table()   OTU Table:         [ 759 taxa and 34 samples ]
-sample_data() Sample Data:       [ 34 samples by 10 sample variables ]
-tax_table()   Taxonomy Table:    [ 759 taxa by 7 taxonomic ranks ]
-phy_tree()    Phylogenetic Tree: [ 759 tips and 757 internal nodes ]
+## phyloseq-class experiment-level object
+## otu_table()   OTU Table:         [ 759 taxa and 34 samples ]
+## sample_data() Sample Data:       [ 34 samples by 10 sample variables ]
+## tax_table()   Taxonomy Table:    [ 759 taxa by 7 taxonomic ranks ]
+## phy_tree()    Phylogenetic Tree: [ 759 tips and 757 internal nodes ]
 ```
 
 You could then do whatever analysis you wanted (in this case we are ignoring normalization/scaling considerations):
@@ -157,6 +158,13 @@ You could then do whatever analysis you wanted (in this case we are ignoring nor
 plot_ordination(physeq, ordinate(physeq, "DCA"), type="samples", color="BodySite")
 ```
 ![physeq](https://github.com/jbisanz/qiime2R/raw/master/images/physeq.png)
+
+You could also try [MicrobeR](https://github.com/jbisanz/MicrobeR)
+```
+devtools::install_github("jbisanz/MicrobeR")
+Microbiome.Barplot(Summarize.Taxa(otus$data, as.data.frame(tax_table))$Family, metadata, CATEGORY="BodySite")
+```
+![microber](https://github.com/jbisanz/qiime2R/raw/master/images/microber.png)
 
 You could also try [MicrobeR](https://github.com/jbisanz/MicrobeR)
 ```
