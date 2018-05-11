@@ -2,7 +2,29 @@
 A package for importing qiime artifacts into an R session.
 
 ### Background
-The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure. This package is trying to simplify the process through a simple `read_qza` function. The artifact is unpacked in to /tmp (or another directory if specified using `tmp="/yourdirhere`) and the raw data and associated metadata are read into a named list (see below). The object is then removed from the tmp dir (unless user specifies `rm=F`).
+The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure. This package is trying to simplify the process through a simple `read_qza` function. The artifact is unpacked in to /tmp (or another directory if specified using `tmp="/yourdirhere`) and the raw data and associated metadata are read into a named list (see below). The object is then removed from the tmp dir (unless user specifies `rm=F`). Data are typically returned as either a matrix, data.frame, phylo object (trees), or DNAStringSets (nucleic acid sequences).
+
+### Dependencies
+* [biomformat](https://www.bioconductor.org/packages/release/bioc/html/biomformat.html)
+* [yaml](https://cran.r-project.org/web/packages/yaml/index.html)
+* [BioStrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html)
+
+### Supported semantic types
+
+* FeatureTable[Balance]
+* FeatureTable[Composition]
+* FeatureTable[Frequency]
+* FeatureTable[PresenceAbsence]
+* FeatureTable[RelativeFrequency]
+* Phylogeny[Rooted]
+* Phylogeny[Unrooted]
+* DistanceMatrix
+* DeblurStats
+* QualityFilterStats
+* FeatureData[Taxonomy]
+* PCoAResults
+* FeatureData[AlignedSequence]
+* FeatureData[Sequence]
 
 ### To do
 Improve support for more/new semanatic types and include a function for visualizing and/or summarizing providence in an intelligble format.
