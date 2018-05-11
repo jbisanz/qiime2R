@@ -1,0 +1,83 @@
+---
+title: "qiime2R"
+author: "J Bisanz"
+date: "5/10/2018"
+output: 
+  html_document:
+    fig_width: 8
+    fig_height: 4
+---
+
+***
+
+# Background
+
+qiime2R is intended to import qiime2 artifacts (.qza) directly into an R session while retaining the associated metadata and provenance. This tutorial shows an example of importing the main artifacts for a typical analysis (feature table, tree, and an ordination) and how those could be fed to phyloseq.
+
+First we can start by loading the qiime2R and phyloseq packages.
+```{r}
+library(qiime2R)
+```
+
+Now we can import objects from the [moving pictures tutorial](https://docs.qiime2.org/2018.4/tutorials/moving-pictures/).
+They can be downloaded in the terminal as below:
+```{bash, eval=F}
+wget https://data.qiime2.org/2018.4/tutorials/moving-pictures/sample_metadata.tsv
+wget https://docs.qiime2.org/2018.4/data/tutorials/moving-pictures/table.qza
+wget https://docs.qiime2.org/2018.4/data/tutorials/moving-pictures/rooted-tree.qza
+wget https://docs.qiime2.org/2018.4/data/tutorials/moving-pictures/taxonomy.qza
+```
+
+```{r, warning=F}
+otus<-read_qza("~/QIIME2/mvpics/table.qza")
+```
+
+The imported data is stored as a named list wherein the actual data is appropriately named .$data
+```{r}
+otus$data[1:5,1:5] #show the first 5 samples and first 5 otus
+```
+
+We can also inspect other information about the artifact:
+```{r}
+otus$uuid
+otus$type
+otus$format
+```
+
+The provenance is avilable in `otus$provenance`; however, a future version will better be able to display this data in an intelligible format.
+
+
+Now we can construct a phyloseq object by also pulling in the phylogenetic tree, taxonomy, and metadata
+```{r, warning=F}
+library(phyloseq)
+tree<-read_qza("~/QIIME2/mvpics/rooted-tree.qza")
+
+taxonomy<-read_qza("~/QIIME2/mvpics/taxonomy.qza")
+  tax_table<-do.call(rbind, strsplit(as.character(taxonomy$data$Taxon), "; "))
+  colnames(tax_table)<-c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
+  rownames(tax_table)<-taxonomy$data$Feature.ID
+  
+metadata<-read.table("~/QIIME2/mvpics/sample-metadata.tsv", sep='\t', header=T, row.names=1, comment="")
+metadata<-metadata[-1,]#remove the second line that specifies the data type
+
+physeq<-phyloseq(otu_table(otus$data, taxa_are_rows = T), phy_tree(tree$data), tax_table(tax_table), sample_data(metadata))
+
+physeq
+```
+
+
+Now that the objects are in R-friendly forms, you can carry out analysis as per usual for example:
+```{r}
+plot_ordination(physeq, ordinate(physeq, "DCA"), type="samples", color="BodySite")
+```
+
+
+Or try using [MicrobeR](https://jbisanz.github.io/MicrobeR):
+```{r}
+#MicrobeR devtools::install_github("jbisanz/MicrobeR")
+library(MicrobeR)
+Microbiome.Barplot(Summarize.Taxa(otus$data, as.data.frame(tax_table))$Family, metadata, CATEGORY="BodySite")
+PCoA("unweightedunifrac",  metadata, otus$data, tree$data, "BodySite")
+```
+
+Please report any issues or send suggestions to jordan.bisanz@gmail.com.
