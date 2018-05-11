@@ -14,6 +14,9 @@ This package is trying to simplify the process of getting the artifact into R wi
 ### To do
 Include a function for visualizing and/or summarizing providence in an intelligble format.
 
+### Known issues
+The artifact metadata import may fail on windows PCs due to an issue parsing `.yaml` manifests.
+
 ### Example usage
 
 This example is using data derived from the [moving pictures tutorial](https://docs.qiime2.org/2018.4/tutorials/moving-pictures/).
