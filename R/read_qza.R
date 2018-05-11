@@ -36,18 +36,19 @@ artifact$version=read.table(paste0(tmp,"/",artifact$uuid, "/VERSION"))
 
 if(sum(artifact$version$V2==c("2","4","2018.4.0"))!=3){warning("It is unclear if current artifact version is supported, errors may occur in import...")}#check version and throw warning if new format
 
-  #get data dependent on type
-if(grepl("FeatureTable\\[[A-z]+\\]", artifact$type)){ #FeatureTable[Balance]|FeatureTable[Composition]|FeatureTable[Frequency]|FeatureTable[PresenceAbsence]|FeatureTable[RelativeFrequency]
+  #get data dependent on format
+if(grepl("BIOMV", artifact$format)){
   suppressWarnings(artifact$data<-as(biom_data(read_biom(paste0(tmp, "/", artifact$uui,"/data/feature-table.biom"))),"matrix")) #suppressing warning about \n characters
-} else if (grepl("Phylogeny\\[[A-z]+\\]", artifact$type)){ #Phylogeny[Rooted]|Phylogeny[Unrooted]
+} else if (artifact$format=="NewickDirectoryFormat"){
   artifact$data<-read.tree(paste0(tmp,"/",artifact$uuid,"/data/tree.nwk"))
-} else if (artifact$type=="DistanceMatrix") { #DistanceMatrix
+} else if (artifact$format=="DistanceMatrixDirectoryFormat") {
   artifact$data<-as.dist(read.table(paste0(tmp,"/", artifact$uuid, "/data/distance-matrix.tsv"), header=T, row.names=1))
-} else if (artifact$type %in% c("DeblurStats", "QualityFilterStats")) { #DeblurStats|QualityFilterStats
-  artifact$data<-read.csv(paste0(tmp,"/", artifact$uuid, "/data/stats.csv"), header=T, row.names=1)
-} else if (artifact$type=="FeatureData[Taxonomy]"){ #FeatureData[Taxonomy]
+} else if (grepl("StatsDirFmt", artifact$format)) {
+  if(paste0(artifact$uuid, "/data/stats.csv") %in% artifact$contents$files){artifact$data<-read.csv(paste0(tmp,"/", artifact$uuid, "/data/stats.csv"), header=T, row.names=1)}
+  if(paste0(artifact$uuid, "/data/stats.tsv") %in% artifact$contents$files){artifact$data<-read.table(paste0(tmp,"/", artifact$uuid, "/data/stats.tsv"), header=T, row.names=1, sep='\t')} #can be tsv or csv
+} else if (artifact$format=="TSVTaxonomyDirectoryFormat"){
   artifact$data<-read.table(paste0(tmp,"/", artifact$uuid, "/data/taxonomy.tsv"), sep='\t', header=T)
-} else if (artifact$type=="PCoAResults"){
+} else if (artifact$format=="OrdinationDirectoryFormat"){
 
   results<-scan(file=paste0(tmp,"/", artifact$uuid, "/data/ordination.txt"), what="character", sep='\t') #deal with merged table by reading as one long string
 
@@ -60,15 +61,17 @@ if(grepl("FeatureTable\\[[A-z]+\\]", artifact$type)){ #FeatureTable[Balance]|Fea
   artifact$data$Vectors<-as.data.frame(t(matrix(results, ncol=len)))
   colnames(artifact$data$Vectors)<-c("SampleID", paste0("PC", 1:len))
   artifact$data$Vectors[,2:len]<-apply(artifact$data$Vectors[,2:len], 2, as.numeric)
-} else if (artifact$type=="FeatureData[Sequence]") {
+} else if (artifact$format=="DNASequencesDirectoryFormat") {
   artifact$data<-readDNAStringSet(paste0(tmp,"/",artifact$uuid,"/data/dna-sequences.fasta"))
-} else if (artifact$type=="FeatureData[AlignedSequence]") {
+} else if (artifact$format=="AlignedDNASequencesDirectoryFormat") {
   artifact$data<-readDNAMultipleAlignment(paste0(tmp,"/",artifact$uuid,"/data/aligned-dna-sequences.fasta"))
-} else if (grepl("Sequences", artifact$type)) {
+} else if (grepl("EMPPairedEndDirFmt|EMPSingleEndDirFmt|FastqGzFormat|MultiplexedPairedEndBarcodeInSequenceDirFmt|MultiplexedSingleEndBarcodeInSequenceDirFmt|PairedDNASequencesDirectoryFormat|SingleLanePerSamplePairedEndFastqDirFmt|SingleLanePerSampleSingleEndFastqDirFmt", artifact$format)) {
   artifact$data<-data.frame(files=list.files(paste0(tmp,"/", artifact$uuid,"/data")))
   artifact$data$size<-format(sapply(artifact$data$files, function(x){file.size(paste0(tmp,"/",artifact$uuid,"/data/",x))}, simplify = T))
+} else if (artifact$format=="AlphaDiversityDirectoryFormat") {
+  artifact$data<-read.table(paste0(tmp, "/", artifact$uuid, "/data/alpha-diversity.tsv"))
 } else {
-  message("Semantic type not supported, only a list of data files and provenance is being imported.")
+  message("Format not supported, only a list of internal files and provenance is being imported.")
   artifact$data<-list.files(paste0(tmp,"/",artifact$uuid, "/data"))
 }
 
