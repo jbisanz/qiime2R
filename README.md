@@ -32,6 +32,48 @@ Improve support for more/new semanatic types and include a function for visualiz
 ### Example usage
 
 This example is using data derived from the [moving pictures tutorial](https://docs.qiime2.org/2018.4/tutorials/moving-pictures/).
+```
+?read_qza
+Usage:
+
+     read_qza(file, tmp, rm)
+     
+Arguments:
+
+    file: path to the input file, ex:
+          file="~/data/moving_pictures/table.qza"
+
+     tmp: a temporary directory that the object will be decompressed to
+          (default="/tmp")
+
+      rm: should the decompressed object be removed at completion of
+          function (T/F default=T)
+
+Value:
+
+     a named list of the following objects:
+
+        • artifact$data - the raw data ex OTU table as matrix or tree
+          in phylo format
+
+        • artifact$uuid - the unique identifer of the artifact
+
+        • artifact$type - the semantic type of the object (ex
+          FeatureData[Sequence])
+
+        • artifact$format - the format of the qiime artifact
+
+        • artifact$provenance - information tracking how the object was
+          created
+
+        • artifact$contents - a table of all the files contained within
+          the artifact and their file size
+
+        • artifact$version - the reported version for the artifact, a
+          warning error may be thrown if a new version is seen
+
+
+```
 
 ```
 otus<-read_qza("~/QIIME2/mvpics/table.qza")
