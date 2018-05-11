@@ -17,6 +17,9 @@ Include a function for visualizing and/or summarizing providence in an intelligb
 ### Known issues
 The artifact metadata import may fail on windows PCs due to an issue parsing `.yaml` manifests.
 
+Please report any issues to [jordan.bisanz@gmail.com](mailto:jordan.bisanz@gmail.com). Community contributions to coding would be appreciated!
+
+
 ### Example usage
 
 This example is using data derived from the [moving pictures tutorial](https://docs.qiime2.org/2018.4/tutorials/moving-pictures/).
