@@ -165,10 +165,3 @@ devtools::install_github("jbisanz/MicrobeR")
 Microbiome.Barplot(Summarize.Taxa(otus$data, as.data.frame(tax_table))$Family, metadata, CATEGORY="BodySite")
 ```
 ![microber](https://github.com/jbisanz/qiime2R/raw/master/images/microber.png)
-
-You could also try [MicrobeR](https://github.com/jbisanz/MicrobeR)
-```
-devtools::install_github("jbisanz/MicrobeR")
-Microbiome.Barplot(Summarize.Taxa(otus$data, as.data.frame(tax_table))$Family, metadata, CATEGORY="BodySite")
-```
-![microber](https://github.com/jbisanz/qiime2R/raw/master/images/microber.png)
