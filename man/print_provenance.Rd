@@ -15,3 +15,6 @@ a text summary for the provenance information
 \description{
 extracts embedded data and object metadata into an R session
 }
+\examples{
+\dontrun{print_provenance(artifact)}
+}

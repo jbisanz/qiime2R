@@ -2,7 +2,7 @@
 % Please edit documentation in R/qza_to_phyloseq.R
 \name{qza_to_phyloseq}
 \alias{qza_to_phyloseq}
-\title{generates a phyloseq (.qza)}
+\title{generates a phyloseq object from .qza artifacts}
 \usage{
 qza_to_phyloseq(features, tree, taxonomy, metadata)
 }
@@ -20,4 +20,7 @@ a phyloseq object
 }
 \description{
 Construct a phyloseq object from multiple qiime2 artifacts (.qza). Embedded metadata for provenance is not maintained in this function and instead read_qza() should be used.
+}
+\examples{
+\dontrun{physeq<-qza_to_phyloseq(features="table.qza", tree="rooted-tree.qza", taxonomy="taxonomy.qza", metdata="sample-metadata.qza")}
 }

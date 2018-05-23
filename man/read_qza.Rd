@@ -11,7 +11,7 @@ read_qza(file, tmp, rm)
 
 \item{tmp}{a temporary directory that the object will be decompressed to (default="/tmp")}
 
-\item{rm}{should the decompressed object be removed at completion of function (T/F default=T)}
+\item{rm}{should the decompressed object be removed at completion of function (T/F default=TRUE)}
 }
 \value{
 a named list of the following objects:
@@ -27,4 +27,7 @@ a named list of the following objects:
 }
 \description{
 extracts embedded data and object metadata into an R session
+}
+\examples{
+\dontrun{SVs<-read_qza("table.qza")}
 }

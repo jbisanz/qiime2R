@@ -4,6 +4,7 @@
 #'
 #' @param artifact the object returned by read_qza
 #' @return a text summary for the provenance information
+#' @examples \dontrun{print_provenance(artifact)}
 #' @export
 #'
 #'

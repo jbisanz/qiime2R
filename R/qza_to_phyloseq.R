@@ -1,4 +1,4 @@
-#' generates a phyloseq (.qza)
+#' generates a phyloseq object from .qza artifacts
 #'
 #' Construct a phyloseq object from multiple qiime2 artifacts (.qza). Embedded metadata for provenance is not maintained in this function and instead read_qza() should be used.
 #'
@@ -7,6 +7,8 @@
 #' @param taxonomy file path for artifact containg taxonomy
 #' @param metadata file path for a qiime2-compliant TSV metadata file
 #' @return a phyloseq object
+#'
+#' @examples \dontrun{physeq<-qza_to_phyloseq(features="data/table.qza", tree="data/rooted-tree.qza", taxonomy="data/taxonomy.qza", metdata="data/sample-metadata.qza")}
 #' @export
 #'
 #'
