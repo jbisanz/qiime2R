@@ -10,6 +10,8 @@ This package is trying to simplify the process of getting the artifact into R wi
 * [biomformat](https://www.bioconductor.org/packages/release/bioc/html/biomformat.html)
 * [yaml](https://cran.r-project.org/web/packages/yaml/index.html)
 * [BioStrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html)
+* [Phyloseq](https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html)
+* [Hmisc](https://www.google.com/search?q=Hmisc&rlz=1C5CHFA_enIN774IN774&oq=Hmisc&aqs=chrome.0.69i59j69i60l3j0l2.628j1j9&sourceid=chrome&ie=UTF-8)
 
 ### To do
 Include a function for visualizing and/or summarizing providence in an intelligble format.
@@ -17,7 +19,7 @@ Include a function for visualizing and/or summarizing providence in an intelligb
 ### Known issues
 The artifact metadata import may fail on windows PCs due to an issue parsing `.yaml` manifests.
 
-Please report any issues to [jordan.bisanz@gmail.com](mailto:jordan.bisanz@gmail.com). Community contributions to coding would be appreciated!
+Please report any issues using the issues tab above. Community contributions to coding would be appreciated!
 
 
 ### Example usage
@@ -116,9 +118,22 @@ files	size
 6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/bbb00eed-8dec-475e-a07b-4a527a2f1863/VERSION	39
 6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/bbb00eed-8dec-475e-a07b-4a527a2f1863/action/action.yaml	4220
 ```
-The provenance is supplied as a nested set of lists but it can be difficult to interpret at this point: `otus$provenance`.
+The provenance is supplied as a nested set of lists but it can be difficult to interpret at this point: `otus$provenance`. A function for printing the provenance is `print_provenance()`
 
-You could the supplied wrapper script `qza_to_phyloseq`
+```
+print_provenance(otus)
+artifact$provenance = list 3 (103880 bytes)
+.  6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/action/action.yaml = list 4
+. .  execution = list 2
+. . .  uuid = character 1= 70ea1d17-ffcf-4113-8ce 
+. . .  runtime = list 3
+. . . .  start = character 1= 2018-04-26T09:43:13.48 
+. . . .  end = character 1= 2018-04-26T09:47:32.33 
+. . . .  duration = character 1= 4 minutes, 18 seconds, 
+...
+```
+
+You could the supplied wrapper script `qza_to_phyloseq()`
 ```
 physeq<-qza_to_phyloseq("table.qza","rooted-tree.qza","taxonomy.qza", "sample-metadata.tsv")
 physeq
@@ -158,13 +173,6 @@ You could then do whatever analysis you wanted (in this case we are ignoring nor
 plot_ordination(physeq, ordinate(physeq, "DCA"), type="samples", color="BodySite")
 ```
 ![physeq](https://github.com/jbisanz/qiime2R/raw/master/images/physeq.png)
-
-You could also try [MicrobeR](https://github.com/jbisanz/MicrobeR)
-```
-devtools::install_github("jbisanz/MicrobeR")
-Microbiome.Barplot(Summarize.Taxa(otus$data, as.data.frame(tax_table))$Family, metadata, CATEGORY="BodySite")
-```
-![microber](https://github.com/jbisanz/qiime2R/raw/master/images/microber.png)
 
 You could also try [MicrobeR](https://github.com/jbisanz/MicrobeR)
 ```

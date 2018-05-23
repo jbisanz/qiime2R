@@ -10,6 +10,8 @@ importFrom(phyloseq, phyloseq)
 importFrom(phyloseq, otu_table)
 importFrom(phyloseq, tax_table)
 importFrom(phyloseq, sample_data)
+importFrom(Hmisc, list.tree)
 
 export(read_qza)
 export(qza_to_phyloseq)
+export(print_provenance)

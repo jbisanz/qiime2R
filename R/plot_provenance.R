@@ -3,7 +3,7 @@
 #' extracts embedded data and object metadata into an R session
 #'
 #' @param artifact the object returned by read_qza
-#' @return a ggplot object which can be printed to the screen and/or modified
+#' @return a text summary for the provenance information
 #' @export
 #'
 #'
@@ -11,16 +11,9 @@
 
 #Not currently exported
 
-plot_provenance<-function(artifact){
+print_provenance<-function(artifact){
   if(missing(artifact)){stop("Artifact not provided...")}
 
-  prv<-artifact$provenance
+  return(list.tree(artifact$provenance, maxcomp=1000, attr.print=F))
 
-  lapply(prv, function(x){
-    ins<-x$action$inputs
-  })
-
-
-  plot<-1
-  return(plot)
 }

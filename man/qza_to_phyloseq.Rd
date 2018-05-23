@@ -13,7 +13,7 @@ physeq<-qza_to_phyloseq(features="table.qza", tree="rooted-tree.qza", taxonomy="
 
 \item{taxonomy}{file path for artifact containg taxonomy}
 
-\item{metadata}{file path fora qiime2-compliant TSV metadata file}
+\item{metadata}{file path for a qiime2-compliant TSV metadata file}
 }
 \value{
 a phyloseq object
