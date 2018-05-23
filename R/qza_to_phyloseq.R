@@ -7,7 +7,6 @@
 #' @param taxonomy file path for artifact containg taxonomy
 #' @param metadata file path for a qiime2-compliant TSV metadata file
 #' @return a phyloseq object
-#' @usage physeq<-qza_to_phyloseq(features="table.qza", tree="rooted-tree.qza", taxonomy="taxonomy.qza", metadata="sample-metadata.tsv")
 #' @export
 #'
 #'

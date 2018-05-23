@@ -4,7 +4,7 @@
 \alias{qza_to_phyloseq}
 \title{generates a phyloseq (.qza)}
 \usage{
-physeq<-qza_to_phyloseq(features="table.qza", tree="rooted-tree.qza", taxonomy="taxonomy.qza", metadata="sample-metadata.tsv")
+qza_to_phyloseq(features, tree, taxonomy, metadata)
 }
 \arguments{
 \item{features}{file path for artifact containing a feature (OTU/SV) table}

@@ -27,7 +27,7 @@ if(missing(file)){stop("Path to artifact (.qza) not provided")}
 if(missing(rm)){rm=T} #remove the decompressed object from tmp
 
 unzip(file, exdir=tmp)
-unpacked<-unzip(file, exdir=tmp, list=T)
+unpacked<-unzip(file, exdir=tmp, list=TRUE)
 
 artifact<-read_yaml(paste0(tmp,"/", paste0(gsub("/..+","", unpacked$Name[1]),"/metadata.yaml"))) #start by loading in the metadata not assuming it will be first file listed
 artifact$contents<-data.frame(files=unpacked)

@@ -13,6 +13,6 @@
 print_provenance<-function(artifact){
   if(missing(artifact)){stop("Artifact not provided...")}
 
-  return(list.tree(artifact$provenance, maxcomp=1000, attr.print=F))
+  return(list.tree(artifact$provenance, maxcomp=1000, attr.print=FALSE))
 
 }
