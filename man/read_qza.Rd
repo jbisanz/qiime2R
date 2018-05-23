@@ -29,5 +29,5 @@ a named list of the following objects:
 extracts embedded data and object metadata into an R session
 }
 \examples{
-\dontrun{SVs<-read_qza("table.qza")}
+\dontrun{SVs<-read_qza("data/table.qza")}
 }
