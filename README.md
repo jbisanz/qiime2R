@@ -2,7 +2,14 @@
 A package for importing qiime artifacts into an R session.
 
 ### Background
-The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure. 
+The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure.
+
+While it is possible to export data on a one-by-one basis from the qiime artifacts using qiime's built in suite of export features this is problematic and runs antithetical to the purpose of the artifact format for the following reasons:
+
+* Export of data from the artifact using QIIME2 requires an installation which may not be available on the user's computer and may not be trivial to install for a novice user
+* Export of the data will loose the assosciated provenance data loosing the associated metadata necessary for tracing the lineage of the analysis
+* Export of the data on a one-by-one basis is tedious and creates multiple copies of intermediate files
+* R has many options for advanced data analysis and/or visualization that may not natively supported in QIIME or python environments
 
 This package is trying to simplify the process of getting the artifact into R without discarding any of the associated data through a simple `read_qza` function. The artifact is unpacked in to /tmp (or another directory if specified using `tmp="/yourdirhere`) and the raw data and associated metadata are read into a named list (see below). The object is then removed from the tmp dir (unless user specifies `rm=F`). Data are typically returned as either a matrix, data.frame, phylo object (trees), or DNAStringSets (nucleic acid sequences).
 
