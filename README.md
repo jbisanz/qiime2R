@@ -7,7 +7,7 @@ The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2
 While it is possible to export data on a one-by-one basis from the qiime artifacts using qiime's built in suite of export features this is problematic and runs antithetical to the purpose of the artifact format for the following reasons:
 
 * Export of data from the artifact using QIIME2 requires an installation which may not be available on the user's computer and may not be trivial to install for a novice user
-* Export of the data will loose the assosciated provenance data loosing the associated metadata necessary for tracing the lineage of the analysis
+* Export of the data will loose the associated provenance information. Now the origin of the data can't be traced and the parameters that led to its generation has been lost.
 * Export of the data on a one-by-one basis is tedious and creates multiple copies of intermediate files
 * R has many options for advanced data analysis and/or visualization that may not natively supported in QIIME or python environments
 
