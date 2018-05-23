@@ -9,7 +9,6 @@
 #'
 #'
 
-#Not currently exported
 
 print_provenance<-function(artifact){
   if(missing(artifact)){stop("Artifact not provided...")}
