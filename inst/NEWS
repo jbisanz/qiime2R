@@ -1,0 +1,6 @@
+Changes for v0.99
+---
+
+- compliance for bioconductor
+- qza_to_phyloseq is less strict about objects included in phyloseq object
+- added vignette and help

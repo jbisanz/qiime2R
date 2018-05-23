@@ -30,7 +30,7 @@ qza_to_phyloseq<-function(features,tree,taxonomy,metadata){
   if(!missing(taxonomy)){
     taxonomy<-read_qza(taxonomy)$data
     taxt<-suppressWarnings(do.call(rbind, strsplit(as.character(taxonomy$Taxon),"\\; ")))
-    rownames(taxt)<-tax$Feature.ID
+    rownames(taxt)<-taxonomy$Feature.ID
     argstring<-paste(argstring, "tax_table(taxt),")
   }
 

@@ -1,0 +1,10 @@
+citHeader("To cite qiime2R, or otherwise credit, please use:")
+
+citEntry(entry = "unpublished",
+  author = "Jordan E Bisanz",
+  title = "qiime2R: Importing QIIME2 artifacts and associated data into R sessions",
+  year = "2018",
+  Url = "https://github.com/jbisanz/qiime2R",
+  note = "v0.99",
+  textVersion = "qiime2R: Importing QIIME2 artifacts and associated data into R sessions. Jordan E Bisanz (2018) https://github.com/jbisanz/qiime2R."
+)

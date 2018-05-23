@@ -1,5 +1,3 @@
-exportPattern("^[[:alpha:]]+")
-
 importFrom(yaml, read_yaml)
 importFrom(biomformat, biom_data)
 importFrom(biomformat, read_biom)
@@ -11,6 +9,8 @@ importFrom(phyloseq, otu_table)
 importFrom(phyloseq, tax_table)
 importFrom(phyloseq, sample_data)
 importFrom(Hmisc, list.tree)
+importFrom("stats", "as.dist")
+importFrom("utils", "read.csv", "read.table", "unzip")
 
 export(read_qza)
 export(qza_to_phyloseq)
