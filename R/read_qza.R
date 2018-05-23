@@ -78,6 +78,6 @@ if(grepl("BIOMV", artifact$format)){
 pfiles<-paste0(tmp,"/", grep("..+provenance/..+action.yaml", unpacked$Name, value=T))
 artifact$provenance<-lapply(pfiles, read_yaml)
 names(artifact$provenance)<-grep("..+provenance/..+action.yaml", unpacked$Name, value=T)
-if(rm==TRUE){unlink(paste0(tmp,"/", artifact$uuid), recursive=T)}
+if(rm==TRUE){unlink(paste0(tmp,"/", artifact$uuid), recursive=TRUE)}
 return(artifact)
 }
