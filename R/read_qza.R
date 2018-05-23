@@ -4,7 +4,7 @@
 #'
 #' @param file path to the input file, ex: file="~/data/moving_pictures/table.qza"
 #' @param tmp a temporary directory that the object will be decompressed to (default="/tmp")
-#' @param rm should the decompressed object be removed at completion of function (T/F default=T)
+#' @param rm should the decompressed object be removed at completion of function (T/F default=TRUE)
 #' @return a named list of the following objects:
 #' \itemize{
 #' \item artifact$data - the raw data ex OTU table as matrix or tree in phylo format
@@ -24,7 +24,7 @@ read_qza <- function(file, tmp, rm) {
 
 if(missing(tmp)){tmp="/tmp/"}
 if(missing(file)){stop("Path to artifact (.qza) not provided")}
-if(missing(rm)){rm=T} #remove the decompressed object from tmp
+if(missing(rm)){rm=TRUE} #remove the decompressed object from tmp
 
 unzip(file, exdir=tmp)
 unpacked<-unzip(file, exdir=tmp, list=TRUE)
@@ -42,12 +42,12 @@ if(grepl("BIOMV", artifact$format)){
 } else if (artifact$format=="NewickDirectoryFormat"){
   artifact$data<-read.tree(paste0(tmp,"/",artifact$uuid,"/data/tree.nwk"))
 } else if (artifact$format=="DistanceMatrixDirectoryFormat") {
-  artifact$data<-as.dist(read.table(paste0(tmp,"/", artifact$uuid, "/data/distance-matrix.tsv"), header=T, row.names=1))
+  artifact$data<-as.dist(read.table(paste0(tmp,"/", artifact$uuid, "/data/distance-matrix.tsv"), header=TRUE, row.names=1))
 } else if (grepl("StatsDirFmt", artifact$format)) {
   if(paste0(artifact$uuid, "/data/stats.csv") %in% artifact$contents$files){artifact$data<-read.csv(paste0(tmp,"/", artifact$uuid, "/data/stats.csv"), header=T, row.names=1)}
   if(paste0(artifact$uuid, "/data/stats.tsv") %in% artifact$contents$files){artifact$data<-read.table(paste0(tmp,"/", artifact$uuid, "/data/stats.tsv"), header=T, row.names=1, sep='\t')} #can be tsv or csv
 } else if (artifact$format=="TSVTaxonomyDirectoryFormat"){
-  artifact$data<-read.table(paste0(tmp,"/", artifact$uuid, "/data/taxonomy.tsv"), sep='\t', header=T)
+  artifact$data<-read.table(paste0(tmp,"/", artifact$uuid, "/data/taxonomy.tsv"), sep='\t', header=TRUE)
 } else if (artifact$format=="OrdinationDirectoryFormat"){
 
   results<-scan(file=paste0(tmp,"/", artifact$uuid, "/data/ordination.txt"), what="character", sep='\t') #deal with merged table by reading as one long string
@@ -67,7 +67,7 @@ if(grepl("BIOMV", artifact$format)){
   artifact$data<-readDNAMultipleAlignment(paste0(tmp,"/",artifact$uuid,"/data/aligned-dna-sequences.fasta"))
 } else if (grepl("EMPPairedEndDirFmt|EMPSingleEndDirFmt|FastqGzFormat|MultiplexedPairedEndBarcodeInSequenceDirFmt|MultiplexedSingleEndBarcodeInSequenceDirFmt|PairedDNASequencesDirectoryFormat|SingleLanePerSamplePairedEndFastqDirFmt|SingleLanePerSampleSingleEndFastqDirFmt", artifact$format)) {
   artifact$data<-data.frame(files=list.files(paste0(tmp,"/", artifact$uuid,"/data")))
-  artifact$data$size<-format(sapply(artifact$data$files, function(x){file.size(paste0(tmp,"/",artifact$uuid,"/data/",x))}, simplify = T))
+  artifact$data$size<-format(sapply(artifact$data$files, function(x){file.size(paste0(tmp,"/",artifact$uuid,"/data/",x))}, simplify = TRUE))
 } else if (artifact$format=="AlphaDiversityDirectoryFormat") {
   artifact$data<-read.table(paste0(tmp, "/", artifact$uuid, "/data/alpha-diversity.tsv"))
 } else {
