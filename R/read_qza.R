@@ -75,9 +75,9 @@ if(grepl("BIOMV", artifact$format)){
   artifact$data<-list.files(paste0(tmp,"/",artifact$uuid, "/data"))
 }
 
-pfiles<-paste0(tmp,"/", grep("..+provenance/..+action.yaml", unpacked$Name, value=T))
+pfiles<-paste0(tmp,"/", grep("..+provenance/..+action.yaml", unpacked$Name, value=TRUE))
 artifact$provenance<-lapply(pfiles, read_yaml)
-names(artifact$provenance)<-grep("..+provenance/..+action.yaml", unpacked$Name, value=T)
+names(artifact$provenance)<-grep("..+provenance/..+action.yaml", unpacked$Name, value=TRUE)
 if(rm==TRUE){unlink(paste0(tmp,"/", artifact$uuid), recursive=TRUE)}
 return(artifact)
 }
