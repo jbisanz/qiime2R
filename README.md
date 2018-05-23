@@ -133,7 +133,7 @@ artifact$provenance = list 3 (103880 bytes)
 ...
 ```
 
-You could the supplied wrapper script `qza_to_phyloseq()`
+If you want to build a phyloseq object for further analysis you could use the function `qza_to_phyloseq()`
 ```
 physeq<-qza_to_phyloseq("table.qza","rooted-tree.qza","taxonomy.qza", "sample-metadata.tsv")
 physeq
