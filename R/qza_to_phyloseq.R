@@ -41,7 +41,7 @@ qza_to_phyloseq<-function(features,tree,taxonomy,metadata){
   }
 
   if(!missing(metadata)){
-    metadata<-read.table(metadata, row.names=1, sep='\t', quote="")
+    metadata<-read.table(metadata, row.names=1, sep='\t', quote="", header=TRUE)
     argstring<-paste(argstring, "sample_data(metadata),")
     sample_data(metadata)
   }
