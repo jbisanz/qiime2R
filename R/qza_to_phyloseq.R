@@ -6,6 +6,7 @@
 #' @param tree file path for  artifact containing a tree
 #' @param taxonomy file path for artifact containg taxonomy
 #' @param metadata file path for a qiime2-compliant TSV metadata file
+#' @param tmp a temporary directory that the object will be decompressed to (default="/tmp")
 #' @return a phyloseq object
 #'
 #' @examples \dontrun{physeq<-qza_to_phyloseq(features="data/table.qza", tree="data/rooted-tree.qza", taxonomy="data/taxonomy.qza", metdata="data/sample-metadata.qza")}
@@ -14,29 +15,32 @@
 #'
 #'
 
-qza_to_phyloseq<-function(features,tree,taxonomy,metadata){
+qza_to_phyloseq<-function(features,tree,taxonomy,metadata, tmp){
 
    if(missing(features) & missing(tree) & missing(taxonomy) & missing(metadata)){
     stop("At least one required artifact is needed (features/tree/taxonomy/) or the metadata.")
-  }
+   }
+  
+  if(missing(tmp)){tmp="/tmp/"}
+  
 
 
   argstring<-""
 
   if(!missing(features)){
-    features<-read_qza(features)$data
+    features<-read_qza(features, tmp=tmp)$data
     argstring<-paste(argstring, "otu_table(features, taxa_are_rows=T),")
   }
 
   if(!missing(taxonomy)){
-    taxonomy<-read_qza(taxonomy)$data
+    taxonomy<-read_qza(taxonomy, tmp=tmp)$data
     taxt<-suppressWarnings(do.call(rbind, strsplit(as.character(taxonomy$Taxon),"\\; ")))
     rownames(taxt)<-taxonomy$Feature.ID
     argstring<-paste(argstring, "tax_table(taxt),")
   }
 
   if(!missing(tree)){
-    tree<-read_qza(tree)$data
+    tree<-read_qza(tree, tmp=tmp)$data
     argstring<-paste(argstring, "phy_tree(tree),")
   }
 

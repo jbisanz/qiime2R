@@ -36,7 +36,7 @@ artifact$contents<-data.frame(files=unpacked)
 artifact$contents$size=sapply(paste0(tmp, "/", artifact$contents$files), file.size)
 artifact$version=read.table(paste0(tmp,"/",artifact$uuid, "/VERSION"))
 
-if(sum(artifact$version$V2==c("2","4","2018.4.0"))!=3){warning("Artifact was not generated with Qiime2 2018.4, if data is not successfully imported, please report here github.com/jbisanz/qiime2R/issues")}#check version and throw warning if new format
+#if(sum(artifact$version$V2==c("2","4","2018.4.0"))!=3){warning("Artifact was not generated with Qiime2 2018.4, if data is not successfully imported, please report here github.com/jbisanz/qiime2R/issues")}#check version and throw warning if new format
 
   #get data dependent on format
 if(grepl("BIOMV", artifact$format)){
