@@ -34,8 +34,12 @@ qza_to_phyloseq<-function(features,tree,taxonomy,metadata, tmp){
 
   if(!missing(taxonomy)){
     taxonomy<-read_qza(taxonomy, tmp=tmp)$data
-    taxt<-suppressWarnings(do.call(rbind, strsplit(as.character(taxonomy$Taxon),"\\; ")))
+    taxt<-strsplit(as.character(taxonomy$Taxon),"\\; ")
+    taxt<-lapply(taxt, function(x){length(x)=7;return(x)})
+    taxt<-do.call(rbind, taxt)
+    taxt<-apply(taxt,2, function(x) replace(x, grepl("^[kpcofgs]__$", x), "Not_Assigned"))
     rownames(taxt)<-taxonomy$Feature.ID
+    colnames(taxt)<-c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
     argstring<-paste(argstring, "tax_table(taxt),")
   }
 
@@ -56,3 +60,4 @@ qza_to_phyloseq<-function(features,tree,taxonomy,metadata, tmp){
 
   return(physeq)
 }
+
