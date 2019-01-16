@@ -1,7 +1,7 @@
 Package: qiime2R
 Type: Package
 Title: qiime2R
-Version: 0.99.1
+Version: 0.99.11
 Author: Jordan Bisanz <jordan.bisanz@gmail.com>
 Maintainer: Jordan Bisanz <jordan.bisanz@gmail.com>
 Description: Importing QIIME2 artifacts and associated data into R sessions.
@@ -12,14 +12,14 @@ RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 biocViews: Microbiome, DataImport
-Depends: R (>= 3.5)
+Depends: R (>= 3.4.1)
 Imports:
-    ape (>= 4.1),
-    Biostrings (>= 2.42.1),
+    ape (>= 5.2),
+    Biostrings (>= 2.46.0),
     biomformat (>= 1.6.0),
-    phyloseq (>= 1.24.0),
+    phyloseq (>= 1.22.3),
     Hmisc (>= 4.1-1),
-    yaml (>= 2.1.19),
+    yaml (>= 2.2.0),
     stats,
     utils
     
