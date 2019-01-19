@@ -24,7 +24,7 @@
 
 read_qza <- function(file, tmp, rm) {
 
-if(missing(tmp)){tmp="/tmp/"}
+if(missing(tmp)){tmp <- tempdir()}
 if(missing(file)){stop("Path to artifact (.qza) not provided")}
 if(missing(rm)){rm=TRUE} #remove the decompressed object from tmp
 
