@@ -3,7 +3,7 @@
 #' extracts embedded data and object metadata into an R session
 #'
 #' @param file path to the input file, ex: file="~/data/moving_pictures/table.qza"
-#' @param tmp a temporary directory that the object will be decompressed to (default="/tmp")
+#' @param tmp a temporary directory that the object will be decompressed to (default="tempdir()")
 #' @param rm should the decompressed object be removed at completion of function (T/F default=TRUE)
 #' @return a named list of the following objects:
 #' \itemize{
