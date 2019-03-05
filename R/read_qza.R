@@ -52,17 +52,28 @@ if(grepl("BIOMV", artifact$format)){
   artifact$data<-read.table(paste0(tmp,"/", artifact$uuid, "/data/taxonomy.tsv"), sep='\t', header=TRUE)
 } else if (artifact$format=="OrdinationDirectoryFormat"){
 
-  results<-scan(file=paste0(tmp,"/", artifact$uuid, "/data/ordination.txt"), what="character", sep='\t') #deal with merged table by reading as one long string
+  linesplit<-suppressWarnings(readLines(paste0(tmp,"/", artifact$uuid, "/data/ordination.txt")))
+  linesplit<-linesplit[sapply(linesplit, function(x) x!="")]
+  
+  for (i in 1:length(linesplit)){
+    if(grepl("^Eigvals\\t|^Proportion explained\\t|^Species\\t|^Site\\t|^Biplot\\t|^Site constraints\\t", linesplit[i])){
+      curfile=strsplit(linesplit[i],"\t")[[1]][1]
+    } else {
+     write(linesplit[i], paste0(tmp,"/", artifact$uuid, "/data/",curfile,".tmp"), append=TRUE)
+    }
+  }
 
-  start<-grep("Proportion explained",results)+2
-  len<-as.numeric(results[grep("Proportion explained",results)+1])
-  artifact$data$ProportionExplained<-as.numeric(results[start:(start+(len-1))])
-  names(artifact$data$ProportionExplained)<-paste0("PC",1:len)
-
-  results<-results[(grep("Site", results)[1]+3):(grep("Biplot", results)[1]-1)]
-  artifact$data$Vectors<-as.data.frame(t(matrix(results, ncol=len)))
-  colnames(artifact$data$Vectors)<-c("SampleID", paste0("PC", 1:len))
-  artifact$data$Vectors[,2:len]<-apply(artifact$data$Vectors[,2:len], 2, as.numeric)
+  for (outs in list.files(paste0(tmp,"/", artifact$uuid,"/data"), full.names = TRUE, pattern = "\\.tmp")){
+    NewLab<-gsub(" ", "", toTitleCase(gsub("\\.tmp", "", basename(outs))))
+    artifact$data[[NewLab]]<-read.table(outs,sep='\t', header=FALSE)
+    if(NewLab %in% c("Eigvals","ProportionExplained")){colnames(artifact$data[[NewLab]])<-paste0("PC",1:ncol(artifact$data[[NewLab]]))}
+    if(NewLab %in% c("Site","SiteConstraints")){colnames(artifact$data[[NewLab]])<-c("SampleID", paste0("PC",1:(ncol(artifact$data[[NewLab]])-1)))}
+    if(NewLab %in% c("Species")){colnames(artifact$data[[NewLab]])<-c("FeatureID", paste0("PC",1:(ncol(artifact$data[[NewLab]])-1)))}
+  }
+  
+  artifact$data$Vectors<-artifact$data$Site #Rename Site to Vectors so this matches up with the syntax used in the tutorials
+  artifact$data$Site<-NULL
+  
 } else if (artifact$format=="DNASequencesDirectoryFormat") {
   artifact$data<-readDNAStringSet(paste0(tmp,"/",artifact$uuid,"/data/dna-sequences.fasta"))
 } else if (artifact$format=="AlignedDNASequencesDirectoryFormat") {

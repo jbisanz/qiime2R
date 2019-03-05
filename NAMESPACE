@@ -12,6 +12,7 @@ importFrom(phyloseq, phy_tree)
 importFrom(Hmisc, list.tree)
 importFrom("stats", "as.dist")
 importFrom("utils", "read.csv", "read.table", "unzip")
+importFrom(tools, toTitleCase)
 
 export(read_qza)
 export(qza_to_phyloseq)
