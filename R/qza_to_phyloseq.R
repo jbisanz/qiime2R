@@ -49,7 +49,15 @@ qza_to_phyloseq<-function(features,tree,taxonomy,metadata, tmp){
   }
 
   if(!missing(metadata)){
-    metadata<-read.table(metadata, row.names=1, sep='\t', quote="", header=TRUE)
+    
+    defline<-suppressWarnings(readLines(metadata)[2])
+    if(grepl("^#q2:types", defline)){
+      metadata<-read_q2metadata(metadata)
+      rownames(metadata)<-metadata$SampleID
+      metadata$SampleID<-NULL
+    } else{
+      metadata<-read.table(metadata, row.names=1, sep='\t', quote="", header=TRUE)
+    }
     argstring<-paste(argstring, "sample_data(metadata),")
     sample_data(metadata)
   }
