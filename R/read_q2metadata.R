@@ -23,7 +23,7 @@ read_q2metadata <- function(file) {
   defline[grep("numeric", defline)]<-"as.numeric"
   defline[grep("categorical|q2:types", defline)]<-"as.factor"
   
-  metadata<-subset(read.table(file, header=F, comment.char = "#", sep='\t'), !V1 %in% c("id","sampleid","sample id","sample-id","#SampleID","#Sample ID", "sample_name", "SampleID","Sample ID"))
+  metadata<-subset(read.table(file, header=F, comment.char = "#", sep='\t'), !V1 %in% c("#id","id","sampleid","sample id","sample-id","#SampleID","#Sample ID", "sample_name", "SampleID","Sample ID"))
   colnames(metadata)<-strsplit(suppressWarnings(readLines(file)[1]), "\t")[[1]]
   colnames(metadata)[1]<-"SampleID"
   return(metadata)
