@@ -21,7 +21,8 @@ qza_to_phyloseq<-function(features,tree,taxonomy,metadata, tmp){
     stop("At least one required artifact is needed (features/tree/taxonomy/) or the metadata.")
    }
   
-  if(missing(tmp)){tmp="/tmp/"}
+if(missing(tmp)){tmp <- tempdir()}
+
   
 
 
