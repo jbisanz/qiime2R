@@ -44,7 +44,7 @@ if(grepl("BIOMV", artifact$format)){
 } else if (artifact$format=="NewickDirectoryFormat"){
   artifact$data<-read.tree(paste0(tmp,"/",artifact$uuid,"/data/tree.nwk"))
 } else if (artifact$format=="DistanceMatrixDirectoryFormat") {
-  artifact$data<-as.dist(read.table(paste0(tmp,"/", artifact$uuid, "/data/distance-matrix.tsv"), header=TRUE, row.names=1))
+  artifact$data<-as.dist(read.table(paste0(tmp,"/", artifact$uuid, "/data/distance-matrix.tsv"), header=TRUE, row.names=1, fill= TRUE))
 } else if (grepl("StatsDirFmt", artifact$format)) {
   if(paste0(artifact$uuid, "/data/stats.csv") %in% artifact$contents$files.Name){artifact$data<-read.csv(paste0(tmp,"/", artifact$uuid, "/data/stats.csv"), header=TRUE, row.names=1)}
   if(paste0(artifact$uuid, "/data/stats.tsv") %in% artifact$contents$files.Name){artifact$data<-read.table(paste0(tmp,"/", artifact$uuid, "/data/stats.tsv"), header=TRUE, row.names=1, sep='\t')} #can be tsv or csv
