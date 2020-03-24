@@ -4,7 +4,7 @@
 \alias{qza_to_phyloseq}
 \title{generates a phyloseq object from .qza artifacts}
 \usage{
-qza_to_phyloseq(features, tree, taxonomy, metadata)
+qza_to_phyloseq(features, tree, taxonomy, metadata, tmp)
 }
 \arguments{
 \item{features}{file path for artifact containing a feature (OTU/SV) table}
@@ -14,6 +14,8 @@ qza_to_phyloseq(features, tree, taxonomy, metadata)
 \item{taxonomy}{file path for artifact containg taxonomy}
 
 \item{metadata}{file path for a qiime2-compliant TSV metadata file}
+
+\item{tmp}{a temporary directory that the object will be decompressed to.}
 }
 \value{
 a phyloseq object

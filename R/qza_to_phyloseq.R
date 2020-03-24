@@ -6,7 +6,7 @@
 #' @param tree file path for  artifact containing a tree
 #' @param taxonomy file path for artifact containg taxonomy
 #' @param metadata file path for a qiime2-compliant TSV metadata file
-#' @param tmp a temporary directory that the object will be decompressed to (default="/tmp")
+#' @param tmp a temporary directory that the object will be decompressed to.
 #' @return a phyloseq object
 #'
 #' @examples \dontrun{physeq<-qza_to_phyloseq(features="data/table.qza", tree="data/rooted-tree.qza", taxonomy="data/taxonomy.qza", metdata="data/sample-metadata.qza")}
@@ -23,9 +23,6 @@ qza_to_phyloseq<-function(features,tree,taxonomy,metadata, tmp){
   
 if(missing(tmp)){tmp <- tempdir()}
 
-  
-
-
   argstring<-""
 
   if(!missing(features)){
@@ -35,20 +32,9 @@ if(missing(tmp)){tmp <- tempdir()}
 
   if(!missing(taxonomy)){
     taxonomy<-read_qza(taxonomy, tmp=tmp)$data
-    taxt<-strsplit(as.character(taxonomy$Taxon),"\\; ")
-    if (length(taxt[[1]]) > 1){ #GreenGenes format parsed
-      taxt<-lapply(taxt, function(x){length(x)=7;return(x)})
-      taxt<-do.call(rbind, taxt)
-      taxt<-apply(taxt,2, function(x) replace(x, grep("^[kpcofgs]__$", x), NA))
-    } else { #Try to parse SILVA format
-      taxt<-strsplit(as.character(taxonomy$Taxon),"\\;")
-      taxt<-lapply(taxt, function(x){length(x)=7;return(x)})
-      taxt<-do.call(rbind, taxt)
-      taxt<-apply(taxt,2, function(x) replace(x, grepl("^D_\\d__$", x), NA))
-    }
-    rownames(taxt)<-taxonomy$Feature.ID
-    colnames(taxt)<-c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
-    argstring<-paste(argstring, "tax_table(taxt),")
+    taxonomy<-parse_taxonomy(taxonomy)
+    taxonomy<-as.matrix(taxonomy)
+    argstring<-paste(argstring, "tax_table(taxonomy),")
   }
 
   if(!missing(tree)){
@@ -57,9 +43,7 @@ if(missing(tmp)){tmp <- tempdir()}
   }
 
   if(!missing(metadata)){
-    
-    defline<-suppressWarnings(readLines(metadata)[2])
-    if(grepl("^#q2:types", defline)){
+    if(is_q2metadata(metadata)){
       metadata<-read_q2metadata(metadata)
       rownames(metadata)<-metadata$SampleID
       metadata$SampleID<-NULL
@@ -67,7 +51,6 @@ if(missing(tmp)){tmp <- tempdir()}
       metadata<-read.table(metadata, row.names=1, sep='\t', quote="", header=TRUE)
     }
     argstring<-paste(argstring, "sample_data(metadata),")
-    sample_data(metadata)
   }
 
   argstring<-gsub(",$","", argstring) #remove trailing ","

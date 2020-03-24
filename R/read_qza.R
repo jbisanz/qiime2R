@@ -25,10 +25,12 @@
 read_qza <- function(file, tmp, rm) {
 
 if(missing(tmp)){tmp <- tempdir()}
-if(missing(file)){stop("Path to artifact (.qza) not provided")}
+if(missing(file)){stop("Path to artifact (.qza) not provided.")}
 if(missing(rm)){rm=TRUE} #remove the decompressed object from tmp
-
-unzip(file, exdir=tmp)
+if(!grepl("qza$", file)){stop("Provided file is not qiime2 artifact (.qza).")}
+  
+  
+unzip(file, exdir=tmp) 
 unpacked<-unzip(file, exdir=tmp, list=TRUE)
 
 artifact<-read_yaml(paste0(tmp,"/", paste0(gsub("/..+","", unpacked$Name[1]),"/metadata.yaml"))) #start by loading in the metadata not assuming it will be first file listed
@@ -36,7 +38,6 @@ artifact$contents<-data.frame(files=unpacked)
 artifact$contents$size=sapply(paste0(tmp, "/", artifact$contents$files), file.size)
 artifact$version=read.table(paste0(tmp,"/",artifact$uuid, "/VERSION"))
 
-#if(sum(artifact$version$V2==c("2","4","2018.4.0"))!=3){warning("Artifact was not generated with Qiime2 2018.4, if data is not successfully imported, please report here github.com/jbisanz/qiime2R/issues")}#check version and throw warning if new format
 
   #get data dependent on format
 if(grepl("BIOMV", artifact$format)){
@@ -51,29 +52,8 @@ if(grepl("BIOMV", artifact$format)){
 } else if (artifact$format=="TSVTaxonomyDirectoryFormat"){
   artifact$data<-read.table(paste0(tmp,"/", artifact$uuid, "/data/taxonomy.tsv"), sep='\t', header=TRUE, quote="", comment="")
 } else if (artifact$format=="OrdinationDirectoryFormat"){
-
-  linesplit<-suppressWarnings(readLines(paste0(tmp,"/", artifact$uuid, "/data/ordination.txt")))
-  linesplit<-linesplit[sapply(linesplit, function(x) x!="")]
-  
-  for (i in 1:length(linesplit)){
-    if(grepl("^Eigvals\\t|^Proportion explained\\t|^Species\\t|^Site\\t|^Biplot\\t|^Site constraints\\t", linesplit[i])){
-      curfile=strsplit(linesplit[i],"\t")[[1]][1]
-    } else {
-     write(linesplit[i], paste0(tmp,"/", artifact$uuid, "/data/",curfile,".tmp"), append=TRUE)
-    }
-  }
-
-  for (outs in list.files(paste0(tmp,"/", artifact$uuid,"/data"), full.names = TRUE, pattern = "\\.tmp")){
-    NewLab<-gsub(" ", "", toTitleCase(gsub("\\.tmp", "", basename(outs))))
-    artifact$data[[NewLab]]<-read.table(outs,sep='\t', header=FALSE)
-    if(NewLab %in% c("Eigvals","ProportionExplained")){colnames(artifact$data[[NewLab]])<-paste0("PC",1:ncol(artifact$data[[NewLab]]))}
-    if(NewLab %in% c("Site","SiteConstraints")){colnames(artifact$data[[NewLab]])<-c("SampleID", paste0("PC",1:(ncol(artifact$data[[NewLab]])-1)))}
-    if(NewLab %in% c("Species")){colnames(artifact$data[[NewLab]])<-c("FeatureID", paste0("PC",1:(ncol(artifact$data[[NewLab]])-1)))}
-  }
-  
-  artifact$data$Vectors<-artifact$data$Site #Rename Site to Vectors so this matches up with the syntax used in the tutorials
-  artifact$data$Site<-NULL
-  
+  artifact$data<-suppressWarnings(readLines(paste0(tmp,"/", artifact$uuid, "/data/ordination.txt")))
+  artifact<-parse_ordination(artifact, tmp)
 } else if (artifact$format=="DNASequencesDirectoryFormat") {
   artifact$data<-readDNAStringSet(paste0(tmp,"/",artifact$uuid,"/data/dna-sequences.fasta"))
 } else if (artifact$format=="AlignedDNASequencesDirectoryFormat") {
@@ -83,14 +63,26 @@ if(grepl("BIOMV", artifact$format)){
   artifact$data$size<-format(sapply(artifact$data$files, function(x){file.size(paste0(tmp,"/",artifact$uuid,"/data/",x))}, simplify = TRUE))
 } else if (artifact$format=="AlphaDiversityDirectoryFormat") {
   artifact$data<-read.table(paste0(tmp, "/", artifact$uuid, "/data/alpha-diversity.tsv"))
+} else if (artifact$format=="DifferentialDirectoryFormat") {
+  defline<-suppressWarnings(readLines(paste0(tmp, "/", artifact$uuid, "/data/differentials.tsv"))[2])
+  defline<-strsplit(defline, split="\t")[[1]]
+  defline[grep("numeric", defline)]<-"double"
+  defline[grep("categorical|q2:types", defline)]<-"factor"
+  coltitles<-strsplit(suppressWarnings(readLines(paste0(tmp, "/", artifact$uuid, "/data/differentials.tsv"))[1]), split='\t')[[1]]
+  artifact$data<-read.table(paste0(tmp, "/", artifact$uuid, "/data/differentials.tsv"), header=F, col.names=coltitles, skip=2, sep='\t', colClasses = defline, check.names = FALSE)
+  colnames(artifact$data)[1]<-"Feature.ID"
 } else {
   message("Format not supported, only a list of internal files and provenance is being imported.")
   artifact$data<-list.files(paste0(tmp,"/",artifact$uuid, "/data"))
 }
 
+#Add Provenance
 pfiles<-paste0(tmp,"/", grep("..+provenance/..+action.yaml", unpacked$Name, value=TRUE))
 artifact$provenance<-lapply(pfiles, read_yaml)
 names(artifact$provenance)<-grep("..+provenance/..+action.yaml", unpacked$Name, value=TRUE)
+
 if(rm==TRUE){unlink(paste0(tmp,"/", artifact$uuid), recursive=TRUE)}
+
+
 return(artifact)
 }

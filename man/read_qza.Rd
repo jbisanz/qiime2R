@@ -9,7 +9,7 @@ read_qza(file, tmp, rm)
 \arguments{
 \item{file}{path to the input file, ex: file="~/data/moving_pictures/table.qza"}
 
-\item{tmp}{a temporary directory that the object will be decompressed to (default="/tmp")}
+\item{tmp}{a temporary directory that the object will be decompressed to (default="tempdir()")}
 
 \item{rm}{should the decompressed object be removed at completion of function (T/F default=TRUE)}
 }

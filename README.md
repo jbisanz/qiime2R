@@ -1,148 +1,217 @@
-# qiime2R
-A package for importing qiime artifacts into an R session.
+# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*March 2020 Update v0.99.20*)
 
-### Background
+## Background
 The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure.
 
 While it is possible to export data on a one-by-one basis from the qiime artifacts using qiime's built in suite of export features this is problematic and runs antithetical to the purpose of the artifact format for the following reasons:
 
 * Export of data from the artifact using QIIME2 requires an installation which may not be available on the user's computer and may not be trivial to install for a novice user
-* Export of the data will loose the associated provenance information. Now the origin of the data can't be traced and the parameters that led to its generation has been lost.
+* Export of the data will loose the associated provenance information. Now the origin of the data can't be traced and the parameters that led to its generation have been lost.
 * Export of the data on a one-by-one basis is tedious and creates multiple copies of intermediate files
 * R has many options for advanced data analysis and/or visualization that may not natively supported in QIIME or python environments
 
-This package is trying to simplify the process of getting the artifact into R without discarding any of the associated data through a simple `read_qza` function. The artifact is unpacked in to /tmp (or another directory if specified using `tmp="/yourdirhere`) and the raw data and associated metadata are read into a named list (see below). The object is then removed from the tmp dir (unless user specifies `rm=F`). Data are typically returned as either a matrix, data.frame, phylo object (trees), or DNAStringSets (nucleic acid sequences).
+This package is trying to simplify the process of getting the artifact into R without discarding any of the associated data through a simple `read_qza` function. The artifact is unpacked in to a temporary directory and the raw data and associated metadata are read into a named list (see below). Data are typically returned as either a data.frame, phylo object (trees), or DNAStringSets (nucleic acid sequences).
 
-### Dependencies
-* [biomformat](https://www.bioconductor.org/packages/release/bioc/html/biomformat.html)
-* [yaml](https://cran.r-project.org/web/packages/yaml/index.html)
-* [BioStrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html)
-* [Phyloseq](https://www.bioconductor.org/packages/release/bioc/html/phyloseq.html)
-* [Hmisc](https://www.google.com/search?q=Hmisc&rlz=1C5CHFA_enIN774IN774&oq=Hmisc&aqs=chrome.0.69i59j69i60l3j0l2.628j1j9&sourceid=chrome&ie=UTF-8)
+## Dependencies
 
-### To do
-Include a function for visualizing and/or summarizing providence in an intelligble format.
+* ape (>= 5.2),
+* Biostrings (>= 2.46.0),
+* biomformat (>= 1.6.0),
+* phyloseq (>= 1.22.3),
+* Hmisc (>= 4.1-1),
+* yaml (>= 2.2.0),
+* tidyr (>= 0.8.3),
+* dplyr (>= 0.8.1),
+* stats,
+* utils
 
-### Known issues
-The artifact metadata import may fail on windows PCs due to an issue parsing `.yaml` manifests.
+## Functions
 
-Please report any issues using the issues tab above. Community contributions to coding would be appreciated!
+* `read_qza()` - Function for reading artifacts (.qza). 
+* `qza_to_phyloseq()` - Imports multiple artifacts to produce a phyloseq object.
+* `read_q2metadata()` - Reads qiime2 metadata file (containing q2-types definition line)
+* `write_q2manifest()` - Writes a read manifest file to import data into qiime2
+* `theme_q2r()` - A ggplot2 theme for publication-type figures.
+* `print_provenance()` - A function to display provenance information.
+* `is_q2metadata()` - A function to check if a file is a qiime2 metadata file.
+* `parse_taxonomy()` - A function to parse taxonomy strings and return a table where each column is a taxonomic class.
+* `parse_ordination()` - A function to parse the internal ordination format.
 
+## Installing qiime2R
 
-### Example usage
+qiime2R is currently available via github which can easily be installed in R via the following command:
+```
+if (!requireNamespace("devtools", quietly = TRUE)){install.packages("devtools")}
+devtools::install_github("jbisanz/qiime2R") # current version is 0.99.20
+```
 
-This example is using data derived from the [moving pictures tutorial](https://docs.qiime2.org/2018.4/tutorials/moving-pictures/).
+***
+
+## Reading Artifacts (.qza)
+
+This example is using data derived from the [moving pictures tutorial](https://docs.qiime2.org/2020.2/tutorials/moving-pictures/). The main function we will need is `read_qza()`:
+
 ```
 ?read_qza
-Usage:
+read qiime2 artifacts (.qza)
 
-     read_qza(file, tmp, rm)
-     
-Arguments:
+Description
 
-    file: path to the input file, ex:
-          file="~/data/moving_pictures/table.qza"
+  extracts embedded data and object metadata into an R session
 
-     tmp: a temporary directory that the object will be decompressed to
-          (default="/tmp")
+Usage
 
-      rm: should the decompressed object be removed at completion of
-          function (T/F default=T)
+  read_qza(file, tmp, rm)
 
-Value:
+Arguments
 
-     a named list of the following objects:
+  file - path to the input file, ex: file="~/data/moving_pictures/table.qza"
+  tmp - a temporary directory that the object will be decompressed to (default="tempdir()")
+  rm - should the decompressed object be removed at completion of function (T/F default=TRUE)
 
-        • artifact$data - the raw data ex OTU table as matrix or tree
-          in phylo format
-
-        • artifact$uuid - the unique identifer of the artifact
-
-        • artifact$type - the semantic type of the object (ex
-          FeatureData[Sequence])
-
-        • artifact$format - the format of the qiime artifact
-
-        • artifact$provenance - information tracking how the object was
-          created
-
-        • artifact$contents - a table of all the files contained within
-          the artifact and their file size
-
-        • artifact$version - the reported version for the artifact, a
-          warning error may be thrown if a new version is seen
-
-
+Value
+  
+  a named list of the following objects:
+    artifact$data - the raw data ex OTU table as matrix or tree in phylo format
+    artifact$uuid - the unique identifer of the artifact
+    artifact$type - the semantic type of the object (ex FeatureData[Sequence])
+    artifact$format - the format of the qiime artifact
+    artifact$provenance - information tracking how the object was created
+    artifact$contents - a table of all the files contained within the artifact and their file size
+    artifact$version - the reported version for the artifact, a warning error may be thrown if a new version is seen
 ```
 
+We will start be reading in a table of sequence variants (SVs):
 ```
-otus<-read_qza("~/QIIME2/mvpics/table.qza")
-```
-
-To access the actual data stored within the object, use the .$data
-
-```
-otus$data[1:5,1:5] #show first 5 samples and first 5 taxa
-                                 L1S105 L1S140 L1S208 L1S257 L1S281
-4b5eeb300368260019c1fbc7a3c718fc   2222      0      0      0      0
-fe30ff0f71a38a39cf1717ec2be3a2fc      5      0      0      0      0
-d29fe3c70564fc0f69f2c03e0d1e5561      0      0      0      0      0
-868528ca947bc57b69ffdf83e6b73bae      0   2276   2156   1205   1772
-154709e160e8cada6bfb21115acc80f5    812   1176    713    407    242
+SVs<-read_qza("table.qza")
 ```
 
-We can also get information about the object:
+When the artifact is imported, there are a number of pieces of information included. To see them we can use the names command:
 ```
-names(otus)
+names(SVs)
 [1] "uuid"       "type"       "format"     "contents"   "version"   
 [6] "data"       "provenance"
 ```
 
+To access the actual data stored within the object, access the data as below:
+
 ```
-otus$uuid
-[1] "6a560288-898e-4c1d-92ac-dd8d7822dcc9"
-otus$type
+SVs$data[1:5,1:5] #show first 5 samples and first 5 taxa
+#                                 L1S105 L1S140 L1S208 L1S257 L1S281
+#4b5eeb300368260019c1fbc7a3c718fc   2183      0      0      0      0
+#fe30ff0f71a38a39cf1717ec2be3a2fc      5      0      0      0      0
+#d29fe3c70564fc0f69f2c03e0d1e5561      0      0      0      0      0
+#868528ca947bc57b69ffdf83e6b73bae      0   2249   2117   1191   1737
+#154709e160e8cada6bfb21115acc80f5    802   1174    694    406    242
+```
+
+In the above file each row denotes a sequence variant where in the actual text is the hash of the complete sequence. See [here](https://www.md5hashgenerator.com/) for an example tool for generating hashes.
+
+We can also look at the unique identifier for this object:
+```
+SVs$uuid
+[1] "706b6bce-8f19-4ae9-b8f5-21b14a814a1b"
+```
+
+We can see the type of artifact:
+```
+SVs$type
 [1] "FeatureTable[Frequency]"
 ```
 
 We can also get a complete list of the files within the artifact and their sizes:
 ```
-files	size
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/metadata.yaml	96
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/VERSION	39
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/data/feature-table.biom	86181
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/citations.bib	2387
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/metadata.yaml	96
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/VERSION	39
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/action/action.yaml	4969
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/640f363f-519b-4152-9664-07f9a33e9f25/citations.bib	856
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/640f363f-519b-4152-9664-07f9a33e9f25/metadata.yaml	130
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/640f363f-519b-4152-9664-07f9a33e9f25/VERSION	39
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/640f363f-519b-4152-9664-07f9a33e9f25/action/action.yaml	4650
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/640f363f-519b-4152-9664-07f9a33e9f25/action/barcodes.tsv	756
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/bbb00eed-8dec-475e-a07b-4a527a2f1863/citations.bib	856
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/bbb00eed-8dec-475e-a07b-4a527a2f1863/metadata.yaml	98
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/bbb00eed-8dec-475e-a07b-4a527a2f1863/VERSION	39
-6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/artifacts/bbb00eed-8dec-475e-a07b-4a527a2f1863/action/action.yaml	4220
+SVs$contents
+#                                                                                                           files.Name files.Length          files.Date size
+#1                                                                  706b6bce-8f19-4ae9-b8f5-21b14a814a1b/metadata.yaml           96 2020-02-28 10:21:00  224
+#2                                                                  706b6bce-8f19-4ae9-b8f5-21b14a814a1b/checksums.md5         1341 2020-02-28 10:21:00  224
+#3                                                                        706b6bce-8f19-4ae9-b8f5-21b14a814a1b/VERSION           39 2020-02-28 10:21:00  224
+#4                                                       706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/metadata.yaml           96 2020-02-28 10:21:00  224
+#5                                                       706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/citations.bib         4305 2020-02-28 10:21:00  224
+#6                                                             706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/VERSION           39 2020-02-28 10:21:00  224
+#7        706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/4de0fc23-6462-43d3-8497-f55fc49f5db6/metadata.yaml          130 2020-02-28 10:20:00  224
+#8        706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/4de0fc23-6462-43d3-8497-f55fc49f5db6/citations.bib         3488 2020-02-28 10:20:00  224
+#9              706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/4de0fc23-6462-43d3-8497-f55fc49f5db6/VERSION           39 2020-02-28 10:20:00  224
+#10  706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/4de0fc23-6462-43d3-8497-f55fc49f5db6/action/action.yaml         5473 2020-02-28 10:20:00  224
+#11 706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/4de0fc23-6462-43d3-8497-f55fc49f5db6/action/barcodes.tsv          757 2020-02-28 10:20:00  224
+#12       706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/f5d67104-9506-4373-96e2-97df9199a719/metadata.yaml           98 2020-02-28 10:20:00  224
+#13       706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/f5d67104-9506-4373-96e2-97df9199a719/citations.bib         2774 2020-02-28 10:20:00  224
+#14             706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/f5d67104-9506-4373-96e2-97df9199a719/VERSION           39 2020-02-28 10:20:00  224
+#15  706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/f5d67104-9506-4373-96e2-97df9199a719/action/action.yaml         4893 2020-02-28 10:20:00  224
+#16                                                 706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/action/action.yaml         5617 2020-02-28 10:21:00  224
+#17                                                       706b6bce-8f19-4ae9-b8f5-21b14a814a1b/data/feature-table.biom       114900 2020-02-28 10:21:00  224
 ```
-The provenance is supplied as a nested set of lists but it can be difficult to interpret at this point: `otus$provenance`. A function for printing the provenance is `print_provenance()`
 
+We can also print the providence; however, it is probably easier to use the [q2view tool](https://view.qiime2.org/) for a graphical aid in its interpretation.
 ```
-print_provenance(otus)
-artifact$provenance = list 3 (103880 bytes)
-.  6a560288-898e-4c1d-92ac-dd8d7822dcc9/provenance/action/action.yaml = list 4
+print_provenance(SVs)
+artifact$provenance = list 3 (118072 bytes)
+.  706b6bce-8f19-4ae9-b8f5-21b14a814a1b/provenance/artifacts/4de0fc23-6462-43d3-8497-f55fc49f5db6/action/action.yaml = list 4
 . .  execution = list 2
-. . .  uuid = character 1= 70ea1d17-ffcf-4113-8ce 
+. . .  uuid = character 1= 8614aa95-3638-4e49-88f 
 . . .  runtime = list 3
-. . . .  start = character 1= 2018-04-26T09:43:13.48 
-. . . .  end = character 1= 2018-04-26T09:47:32.33 
-. . . .  duration = character 1= 4 minutes, 18 seconds, 
+. . . .  start = character 1= 2020-02-28T10:19:02.86 
+. . . .  end = character 1= 2020-02-28T10:19:24.46 
+. . . .  duration = character 1= 21 seconds, and 605755 
 ...
 ```
 
-If you want to build a phyloseq object for further analysis you could use the function `qza_to_phyloseq()`
+***
+
+## Reading Metadata
+
+If you are using a qiime2 metadata file (outlined [here](https://docs.qiime2.org/2020.2/tutorials/metadata/)), you can use the supplied function `read_q2metadata()` as below. If using a standard tsv or csv file, you can use `read.table()`, `readr::read_tsv()`, or `readr::csv()`.
+
 ```
-physeq<-qza_to_phyloseq("table.qza","rooted-tree.qza","taxonomy.qza", "sample-metadata.tsv")
+metadata<-read_q2metadata("sample-metadata.tsv")
+head(metadata) # show top lines of metadata
+#  SampleID barcode-sequence body-site year month day   subject reported-antibiotic-usage days-since-experiment-start
+#2     L1S8     AGCTGACTAGTC       gut 2008    10  28 subject-1                       Yes                           0
+#3    L1S57     ACACACTATGGC       gut 2009     1  20 subject-1                        No                          84
+#4    L1S76     ACTACGTGTGGT       gut 2009     2  17 subject-1                        No                         112
+#5   L1S105     AGTGCGATGCGT       gut 2009     3  17 subject-1                        No                         140
+#6   L2S155     ACGATGCGACCA left palm 2009     1  20 subject-1                        No                          84
+#7   L2S175     AGCTATCCACGA left palm 2009     2  17 subject-1                        No                         112
+```
+
+***
+
+## Reading Taxonomy
+
+Note, when taxonomy is imported, a single string is returned along with a confidence score. For many analysis we will want to break up this string and for that purpose the `parse_taxonomy()` function is provided:
+```
+taxonomy<-read_qza("taxonomy.qza")
+head(taxonomy$data)
+#                        Feature.ID                                                                                                                            Taxon Confidence
+#1 4b5eeb300368260019c1fbc7a3c718fc                          k__Bacteria; p__Bacteroidetes; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__  0.9972511
+#2 fe30ff0f71a38a39cf1717ec2be3a2fc                           k__Bacteria; p__Proteobacteria; c__Betaproteobacteria; o__Neisseriales; f__Neisseriaceae; g__Neisseria  0.9799427
+#3 d29fe3c70564fc0f69f2c03e0d1e5561                                k__Bacteria; p__Firmicutes; c__Bacilli; o__Lactobacillales; f__Streptococcaceae; g__Streptococcus  1.0000000
+#4 868528ca947bc57b69ffdf83e6b73bae                          k__Bacteria; p__Bacteroidetes; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides; s__  0.9955859
+#5 154709e160e8cada6bfb21115acc80f5                               k__Bacteria; p__Bacteroidetes; c__Bacteroidia; o__Bacteroidales; f__Bacteroidaceae; g__Bacteroides  1.0000000
+#6 1d2e5f3444ca750c85302ceee2473331 k__Bacteria; p__Proteobacteria; c__Gammaproteobacteria; o__Pasteurellales; f__Pasteurellaceae; g__Haemophilus; s__parainfluenzae  0.9455365
+taxonomy<-parse_taxonomy(taxonomy$data)
+head(taxonomy)
+#                                  Kingdom         Phylum               Class           Order           Family         Genus        Species
+#4b5eeb300368260019c1fbc7a3c718fc Bacteria  Bacteroidetes         Bacteroidia   Bacteroidales   Bacteroidaceae   Bacteroides           <NA>
+#fe30ff0f71a38a39cf1717ec2be3a2fc Bacteria Proteobacteria  Betaproteobacteria    Neisseriales    Neisseriaceae     Neisseria           <NA>
+#d29fe3c70564fc0f69f2c03e0d1e5561 Bacteria     Firmicutes             Bacilli Lactobacillales Streptococcaceae Streptococcus           <NA>
+#868528ca947bc57b69ffdf83e6b73bae Bacteria  Bacteroidetes         Bacteroidia   Bacteroidales   Bacteroidaceae   Bacteroides           <NA>
+#154709e160e8cada6bfb21115acc80f5 Bacteria  Bacteroidetes         Bacteroidia   Bacteroidales   Bacteroidaceae   Bacteroides           <NA>
+#1d2e5f3444ca750c85302ceee2473331 Bacteria Proteobacteria Gammaproteobacteria  Pasteurellales  Pasteurellaceae   Haemophilus parainfluenzae
+```
+***
+
+## Creating a Phyloseq Object
+
+A wrapper function called `qza_to_phyloseq()` is provided which links multiple `read_qza()` calls together to create a phyloseq object for subsequent analysis as per the [phyloseq tutorials](https://joey711.github.io/phyloseq/). An example usage is shown below:
+
+```
+physeq<-qza_to_phyloseq(
+    features="inst/artifacts/2020.2_moving-pictures/table.qza",
+    tree="inst/artifacts/2020.2_moving-pictures/rooted-tree.qza",
+    "inst/artifacts/2020.2_moving-pictures/taxonomy.qza",
+    metadata = "inst/artifacts/2020.2_moving-pictures/sample-metadata.tsv"
+    )
 physeq
 ## phyloseq-class experiment-level object
 ## otu_table()   OTU Table:         [ 759 taxa and 34 samples ]
@@ -151,39 +220,261 @@ physeq
 ## phy_tree()    Phylogenetic Tree: [ 759 tips and 757 internal nodes ]
 ```
 
-OR you could manually build it:
+***
+
+## Example Visualizations
+
+In this next section, methods for publication-ready figures will be demonstrated through extensive use of the [tidyverse](https://www.tidyverse.org/), and particularly ggplot2 and its many extensions. If starting with R, learning these packages early on will have a bit of a learning curve, but pay off massively in the long term. Each section contains a self-contained code snippets capable of replicating the figures and links to the data used. A lot can be learned from modifying parameters of the graphing commands to customize and play around with the visualizations. Note, the pipe operator (%>%) is being used frequently here and passes the output of one line to the next. Learn more about piping in R [here](https://www.datacamp.com/community/tutorials/pipe-r-tutorial).
+
+All the data we will use is from the "Moving Pictures" tutorial and/or related content which can be found [here](https://docs.qiime2.org/2020.2/tutorials/moving-pictures/).
+
+### Alpha Diversity Over Time
+
+Data:
+* [Metadata](https://data.qiime2.org/2020.2/tutorials/moving-pictures/sample_metadata.tsv)
+* [Shannon Diversity](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/core-metrics-results/shannon_vector.qza)
 
 ```
-library(phyloseq)
-tree<-read_qza("~/QIIME2/mvpics/rooted-tree.qza")
+library(tidyverse)
+library(qiime2R)
 
-taxonomy<-read_qza("~/QIIME2/mvpics/taxonomy.qza")
-  tax_table<-do.call(rbind, strsplit(as.character(taxonomy$data$Taxon), "; "))
-  colnames(tax_table)<-c("Kingdom","Phylum","Class","Order","Family","Genus","Species")
-  rownames(tax_table)<-taxonomy$data$Feature.ID
+metadata<-read_q2metadata("sample-metadata.tsv")
+shannon<-read_qza("shannon_vector.qza")
+
+shannon<-shannon$data %>% rownames_to_column("SampleID") # this moves the sample names to a new column that matches the metadata and allows them to be merged
+```
+This dataset provides a good example of why you should always look at your data. There are an extra 3 samples in the metadata which do not have an assigned Shannon diversity value as seen below:
+```
+gplots::venn(list(metadata=metadata$SampleID, shannon=shannon$SampleID))
+```
+![sol](https://github.com/jbisanz/qiime2R/raw/master/images/Shannon_overlap.png)
+
+If this was your dataset, you should look into why this was and try to see why these samples have been lost. We will continue after sorting them out:
+
+```
+metadata<-
+metadata %>% 
+  left_join(shannon)
+head(metadata)
+#  SampleID barcode-sequence body-site year month day   subject reported-antibiotic-usage days-since-experiment-start  shannon
+#1     L1S8     AGCTGACTAGTC       gut 2008    10  28 subject-1                       Yes                           0 3.188316
+#2    L1S57     ACACACTATGGC       gut 2009     1  20 subject-1                        No                          84 3.985702
+#3    L1S76     ACTACGTGTGGT       gut 2009     2  17 subject-1                        No                         112 3.461625
+#4   L1S105     AGTGCGATGCGT       gut 2009     3  17 subject-1                        No                         140 3.972339
+#5   L2S155     ACGATGCGACCA left palm 2009     1  20 subject-1                        No                          84 5.064577
+#6   L2S175     AGCTATCCACGA left palm 2009     2  17 subject-1                        No                         112 4.966707
+```
+Note how we have now added a column for the shannon diversity to our table which will make everything easy to plot. Given this dataset is longitudinal we can plot it as such. Note: the code I am using here would handle replicate data and plot error bars; however, this case does not have replicates. Also, a quick note is that R does generally not like `-`s in column names. To use these names we can surround them with ticks.
+
+```
+metadata %>%
+  filter(!is.na(shannon)) %>%
+  ggplot(aes(x=`days-since-experiment-start`, y=shannon, color=`body-site`)) +
+  stat_summary(geom="errorbar", fun.data=mean_se, width=0) +
+  stat_summary(geom="line", fun.data=mean_se) +
+  stat_summary(geom="point", fun.data=mean_se) +
+  xlab("Days") +
+  ylab("Shannon Diversity") +
+  theme_q2r() + # try other themes like theme_bw() or theme_classic()
+  scale_color_viridis_d(name="Body Site") # use different color scale which is color blind friendly
+  ggsave("Shannon_by_time.pdf", height=3, width=4, device="pdf") # save a PDF 3 inches by 4 inches
+```
+![sbt](https://github.com/jbisanz/qiime2R/raw/master/images/Shannon_by_time.png)
+
+Imagine we wanted to instead ask if there was an effect of antibiotics on diversity. We can change the type of plot:
+
+```
+metadata %>%
+  filter(!is.na(shannon)) %>%
+  ggplot(aes(x=`reported-antibiotic-usage`, y=shannon, fill=`reported-antibiotic-usage`)) +
+  stat_summary(geom="bar", fun.data=mean_se, color="black") + #here black is the outline for the bars
+  geom_jitter(shape=21, width=0.2, height=0) +
+  coord_cartesian(ylim=c(2,7)) + # adjust y-axis
+  facet_grid(~`body-site`) + # create a panel for each body site
+  xlab("Antibiotic Usage") +
+  ylab("Shannon Diversity") +
+  theme_q2r() +
+  scale_fill_manual(values=c("cornflowerblue","indianred")) + #specify custom colors
+  theme(legend.position="none") #remove the legend as it isn't needed
+  ggsave("../../../images/Shannon_by_abx.pdf", height=3, width=4, device="pdf") # save a PDF 3 inches by 4 inches
+```
+![sba](https://github.com/jbisanz/qiime2R/raw/master/images/Shannon_by_abx.png)
+
+Maybe instead the question is if the two individuals have different diversity?
+
+```
+metadata %>%
+  filter(!is.na(shannon)) %>%
+  ggplot(aes(x=subject, y=shannon, fill=`subject`)) +
+  stat_summary(geom="bar", fun.data=mean_se, color="black") + #here black is the outline for the bars
+  geom_jitter(shape=21, width=0.2, height=0) +
+  coord_cartesian(ylim=c(2,7)) + # adjust y-axis
+  facet_grid(~`body-site`) + # create a panel for each body site
+  xlab("Antibiotic Usage") +
+  ylab("Shannon Diversity") +
+  theme_q2r() +
+  scale_fill_manual(values=c("cornflowerblue","indianred")) + #specify custom colors
+  theme(legend.position="none") #remove the legend as it isn't needed
+  ggsave("Shannon_by_person.pdf", height=3, width=4, device="pdf") # save a PDF 3 inches by 4 inches
+```
+![sbp](https://github.com/jbisanz/qiime2R/raw/master/images/Shannon_by_person.png)
+
+Note: It is important to remember that these a graphical tools, but to make a claim, you should also generate some form of statistical support taking the nature of the data into consideration (ie that it uses repeated sampling over time).
+
+### Plotting PCoA
+
+Here I am going to demo a PCoA with extra metadata mapped to it. I indicate the body site, antibiotic usage, and the shannon diversity by mapping to different aesthetic parameters.
+
+Data:
+* [Metadata](https://data.qiime2.org/2020.2/tutorials/moving-pictures/sample_metadata.tsv)
+* [Unweighted UniFrac PCoA](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/core-metrics-results/unweighted_unifrac_pcoa_results.qza)
+* [Shannon Diversity](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/core-metrics-results/shannon_vector.qza)
+
+```{r}
+library(tidyverse)
+library(qiime2R)
+
+metadata<-read_q2metadata("sample-metadata.tsv")
+uwunifrac<-read_qza("unweighted_unifrac_pcoa_results.qza")
+shannon<-read_qza("shannon_vector.qza")$data %>% rownames_to_column("SampleID") 
+
+uwunifrac$data$Vectors %>%
+  select(SampleID, PC1, PC2) %>%
+  left_join(metadata) %>%
+  left_join(shannon) %>%
+  ggplot(aes(x=PC1, y=PC2, color=`body-site`, shape=`reported-antibiotic-usage`, size=shannon)) +
+  geom_point(alpha=0.5) + #alpha controls transparency and helps when points are overlapping
+  theme_q2r() +
+  scale_shape_manual(values=c(16,1), name="Antibiotic Usage") + #see http://www.sthda.com/sthda/RDoc/figure/graphs/r-plot-pch-symbols-points-in-r.png for numeric shape codes
+  scale_size_continuous(name="Shannon Diversity") +
+  scale_color_discrete(name="Body Site")
+  ggsave("PCoA.pdf", height=4, width=5, device="pdf") # save a PDF 3 inches by 4 inches
+```
+![pcoa](https://github.com/jbisanz/qiime2R/raw/master/images/PCoA.png)
+
+### Plotting a Heatmap
+
+Data:
+* [Metadata](https://data.qiime2.org/2020.2/tutorials/moving-pictures/sample_metadata.tsv)
+* [Taxonomy](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/taxonomy.qza)
+* [Feature Table](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/table.qza)
+
+Heat maps provide a very good overview of the composition of samples but tend to not perform well for complex samples or visualizing small differences. I will plot only the top 30 most abundant features (on average) and merge the remainder into a single classification.
+
+```
+library(tidyverse)
+library(qiime2R)
+
+metadata<-read_q2metadata("sample-metadata.tsv")
+SVs<-read_qza("table.qza")$data
+taxonomy<-read_qza("taxonomy.qza")$data
+
+SVs<-apply(SVs, 2, function(x) x/sum(x)*100) #convert to percent
+
+SVsToPlot<-  
+  data.frame(MeanAbundance=rowMeans(SVs)) %>% #find the average abundance of a SV
+  rownames_to_column("Feature.ID") %>%
+  arrange(desc(MeanAbundance)) %>%
+  top_n(30, MeanAbundance) %>%
+  pull(Feature.ID) #extract only the names from the table
   
-metadata<-read.table("~/QIIME2/mvpics/sample-metadata.tsv", sep='\t', header=T, row.names=1, comment="")
-metadata<-metadata[-1,]#remove the second line that specifies the data type
+SVs %>%
+  as.data.frame() %>%
+  rownames_to_column("Feature.ID") %>%
+  gather(-Feature.ID, key="SampleID", value="Abundance") %>%
+  mutate(Feature.ID=if_else(Feature.ID %in% SVsToPlot,  Feature.ID, "Remainder")) %>% #flag features to be collapsed
+  group_by(SampleID, Feature.ID) %>%
+  summarize(Abundance=sum(Abundance)) %>%
+  left_join(metadata) %>%
+  mutate(NormAbundance=log10(Abundance+0.01)) %>% # do a log10 transformation after adding a 0.01% pseudocount. Could also add 1 read before transformation to percent
+  left_join(taxonomy) %>%
+  mutate(Feature=paste(Feature.ID, Taxon)) %>%
+  mutate(Feature=gsub("[kpcofgs]__", "", Feature)) %>% # trim out leading text from taxonomy string
+  ggplot(aes(x=SampleID, y=Feature, fill=NormAbundance)) +
+  geom_tile() +
+  facet_grid(~`body-site`, scales="free_x") +
+  theme_q2r() +
+  theme(axis.text.x=element_text(angle=45, hjust=1)) +
+  scale_fill_viridis_c(name="log10(% Abundance)")
+  ggsave("heatmap.pdf", height=4, width=11, device="pdf") # save a PDF 3 inches by 4 inches
+```
+![heatmap](https://github.com/jbisanz/qiime2R/raw/master/images/heatmap.png)
 
-physeq<-phyloseq(otu_table(otus$data, taxa_are_rows = T), phy_tree(tree$data), tax_table(tax_table), sample_data(metadata))
+### Differential Abundance Analysis
 
-physeq
-## phyloseq-class experiment-level object
-## otu_table()   OTU Table:         [ 759 taxa and 34 samples ]
-## sample_data() Sample Data:       [ 34 samples by 10 sample variables ]
-## tax_table()   Taxonomy Table:    [ 759 taxa by 7 taxonomic ranks ]
-## phy_tree()    Phylogenetic Tree: [ 759 tips and 757 internal nodes ]
+There are many ways to find features that are deferentially abundant across conditions. In this case we are going to use the output of q2-aldex as described [here](https://library.qiime2.org/plugins/q2-aldex2/24/).
+
+```
+library(tidyverse)
+library(qiime2R)
+library(ggrepel) # for offset labels
+library(ggtree) # for visualizing phylogenetic trees
+library(ape) # for manipulating phylogenetic trees
+metadata<-read_q2metadata("sample-metadata.tsv")
+SVs<-read_qza("table.qza")$data
+results<-read_qza("differentials.qza")$data
+taxonomy<-read_qza("taxonomy.qza")$data
+tree<-read_qza("rooted-tree.qza")$data
 ```
 
-You could then do whatever analysis you wanted (in this case we are ignoring normalization/scaling considerations):
+#### Volcano Plot
 ```
-plot_ordination(physeq, ordinate(physeq, "DCA"), type="samples", color="BodySite")
+results %>%
+  left_join(taxonomy) %>%
+  mutate(Significant=if_else(we.eBH<0.1,TRUE, FALSE)) %>%
+  mutate(Taxon=as.character(Taxon)) %>%
+  mutate(TaxonToPrint=if_else(we.eBH<0.1, Taxon, "")) %>% #only provide a label to signifcant results
+  ggplot(aes(x=diff.btw, y=-log10(we.ep), color=Significant, label=TaxonToPrint)) +
+  geom_text_repel(size=1, nudge_y=0.05) +
+  geom_point(alpha=0.6, shape=16) +
+  theme_q2r() +
+  xlab("log2(fold change)") +
+  ylab("-log10(P-value)") +
+  theme(legend.position="none") +
+  scale_color_manual(values=c("black","red"))
+  ggsave("volcano.pdf", height=3, width=3, device="pdf")
 ```
-![physeq](https://github.com/jbisanz/qiime2R/raw/master/images/physeq.png)
+![heatmap](https://github.com/jbisanz/qiime2R/raw/master/images/volcano.png)
 
-You could also try [MicrobeR](https://github.com/jbisanz/MicrobeR)
+### Plotting Per-Feature Abundances
+If we only wanted to plot one significantly different feature, say 4b5eeb300368260019c1fbc7a3c718fc, we can plot only its abundances. The abundances are not exported by ALDEx2 so instead we will recalculate the CLR-abundances using an approximation of ALDEx; however, in R this could be easily calculated using the package itself.
+
 ```
-devtools::install_github("jbisanz/MicrobeR")
-Microbiome.Barplot(Summarize.Taxa(otus$data, as.data.frame(tax_table))$Family, metadata, CATEGORY="BodySite")
+clr<-apply(log2(SVs+0.5), 2, function(x) x-mean(x))
+clr %>%
+  as.data.frame() %>%
+  rownames_to_column("Feature.ID") %>%
+  gather(-Feature.ID, key=SampleID, value=CLR) %>%
+  filter(Feature.ID=="4b5eeb300368260019c1fbc7a3c718fc") %>%
+  left_join(metadata) %>%
+  filter(`body-site`=="gut") %>%
+  ggplot(aes(x=subject, y=CLR, fill=subject)) +
+  stat_summary(geom="bar", color="black") +
+  geom_jitter(width=0.2, height=0, shape=21) +
+  theme_q2r() +
+  theme(legend.position="none")
+  ggsave("aldexbar.pdf", height=2, width=1.5, device="pdf") 
 ```
-![microber](https://github.com/jbisanz/qiime2R/raw/master/images/microber.png)
+![aldexbar](https://github.com/jbisanz/qiime2R/raw/master/images/aldexbar.png)
+
+### Plotting a Phylogenetic Tree
+
+Finally, we can visualize the results on a phylogenetic tree with the help of [ggtree](https://guangchuangyu.github.io/software/ggtree/).
+
+```
+results<-results %>% mutate(Significant=if_else(we.eBH<0.1,"*", ""))
+
+tree<-drop.tip(tree, tree$tip.label[!tree$tip.label %in% results$Feature.ID]) # remove all the features from the tree we do not have data for
+ggtree(tree, layout="circular") %<+% results +
+  geom_tippoint(aes(fill=diff.btw), shape=21, color="grey50")  +
+  geom_tiplab2(aes(label=Significant), size=10) +
+  scale_fill_gradient2(low="darkblue",high="darkred", midpoint = 0, mid="white", name="log2(fold-change") +
+  theme(legend.position="right")
+ggsave("tree.pdf", height=10, width=10, device="pdf", useDingbats=F)
+```
+![tree](https://github.com/jbisanz/qiime2R/raw/master/images/tree.png)
+
+***
+
+Note: please report problems or suggestions on the [qiime2 forum](https://forum.qiime2.org/t/tutorial-integrating-qiime2-and-r-for-data-visualization-and-analysis-using-qiime2r/4121) or the [github issue tracker](https://github.com/jbisanz/qiime2R/issues).
+

@@ -14,17 +14,17 @@
 
 read_q2metadata <- function(file) {
   if(missing(file)){stop("Path to metadata file not found")}
+  if(!is_q2metadata(file)){stop("Metadata does not define types (ie second line does not start with #q2:types)")}
   
   defline<-suppressWarnings(readLines(file)[2])
-  if(!grepl("^#q2:types", defline)){stop("Metadata does not define types (ie second line does not start with #q2:types)")}
-  
   defline<-strsplit(defline, split="\t")[[1]]
   
-  defline[grep("numeric", defline)]<-"as.numeric"
-  defline[grep("categorical|q2:types", defline)]<-"as.factor"
+  defline[grep("numeric", defline)]<-"double"
+  defline[grep("categorical|q2:types", defline)]<-"factor"
   
-  metadata<-subset(read.table(file, header=F, comment.char = "#", sep='\t'), !V1 %in% c("#id","id","sampleid","sample id","sample-id","#SampleID","#Sample ID", "sample_name", "SampleID","Sample ID"))
-  colnames(metadata)<-strsplit(suppressWarnings(readLines(file)[1]), "\t")[[1]]
+  coltitles<-strsplit(suppressWarnings(readLines(file)[1]), split='\t')[[1]]
+  metadata<-read.table(file, header=F, col.names=coltitles, skip=2, sep='\t', colClasses = defline, check.names = FALSE)
   colnames(metadata)[1]<-"SampleID"
+  
   return(metadata)
 }

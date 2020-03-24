@@ -1,14 +1,14 @@
 Package: qiime2R
 Type: Package
 Title: qiime2R
-Version: 0.99.13
+Version: 0.99.20
 Author: Jordan Bisanz <jordan.bisanz@gmail.com>
 Maintainer: Jordan Bisanz <jordan.bisanz@gmail.com>
 Description: Importing QIIME2 artifacts and associated data into R sessions.
 License: MIT
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.0
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 biocViews: Microbiome, DataImport
@@ -20,6 +20,7 @@ Imports:
     phyloseq (>= 1.22.3),
     Hmisc (>= 4.1-1),
     yaml (>= 2.2.0),
+    tidyr (>= 0.8.3),
+    dplyr (>= 0.8.1),
     stats,
     utils
-    

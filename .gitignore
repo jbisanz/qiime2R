@@ -3,14 +3,7 @@
 .RData
 .Ruserdata
 qiime2R.Rproj
-testfiles
-tutorial
 .DS_Store
 ..Rcheck
-qiime2R_0.99.tar.gz
-rooted-tree.qza
-sample_metadata.tsv
-shannon_vector.qza
-table.qza
-taxonomy.qza
-unweighted_unifrac_pcoa_results.qza
+sandbox.R
+inst/artifacts/
