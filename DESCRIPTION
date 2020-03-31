@@ -1,7 +1,7 @@
 Package: qiime2R
 Type: Package
 Title: qiime2R
-Version: 0.99.20
+Version: 0.99.21
 Author: Jordan Bisanz <jordan.bisanz@gmail.com>
 Maintainer: Jordan Bisanz <jordan.bisanz@gmail.com>
 Description: Importing QIIME2 artifacts and associated data into R sessions.

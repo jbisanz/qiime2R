@@ -17,6 +17,7 @@ importFrom(tidyr, separate)
 importFrom(tidyr, `%>%`)
 importFrom(tidyr, spread)
 importFrom(dplyr, case_when)
+importFrom(dplyr, if_else)
 
 
 export(read_qza)
