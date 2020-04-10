@@ -26,8 +26,10 @@ read_qza <- function(file, tmp, rm) {
 
 if(missing(tmp)){tmp <- tempdir()}
 if(missing(file)){stop("Path to artifact (.qza) not provided.")}
+if(!file.exists(file)){stop("Input artifact (",file,") not found. Please check path and/or use list.files() to see files in current working directory.")}
 if(missing(rm)){rm=TRUE} #remove the decompressed object from tmp
 if(!grepl("qza$", file)){stop("Provided file is not qiime2 artifact (.qza).")}
+  
   
   
 unzip(file, exdir=tmp) 

@@ -21,6 +21,7 @@ read_q2metadata <- function(file) {
   
   defline[grep("numeric", defline)]<-"double"
   defline[grep("categorical|q2:types", defline)]<-"factor"
+  defline[defline==""]<-"factor"
   
   coltitles<-strsplit(suppressWarnings(readLines(file)[1]), split='\t')[[1]]
   metadata<-read.table(file, header=F, col.names=coltitles, skip=2, sep='\t', colClasses = defline, check.names = FALSE)
