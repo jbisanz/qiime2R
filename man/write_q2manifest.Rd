@@ -4,7 +4,7 @@
 \alias{write_q2manifest}
 \title{Generates a  read manifest for importing sequencing data into qiime2}
 \usage{
-write_q2manifest(outfile, directory, extension, paired)
+write_q2manifest(outfile, directory, extension, paired, Fwd, Rev)
 }
 \arguments{
 \item{outfile}{filename for output (default: manifest_[timestamp].txt)}

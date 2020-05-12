@@ -13,7 +13,7 @@
 #' @export
 #'
 
-write_q2manifest<-function(outfile, directory, extension, paired){
+write_q2manifest<-function(outfile, directory, extension, paired, Fwd, Rev){
   if(missing(outfile)){outfile<-paste0("q2manifest_", gsub(" |:","", timestamp(prefix="", suffix="")),".txt")}
   if(missing(directory)){stop("Directory containing reads not provided.")}
   if(missing(extension)){extension=".fastq.gz"}
@@ -21,7 +21,7 @@ write_q2manifest<-function(outfile, directory, extension, paired){
   if(missing(Fwd)){Fwd="_R1"}
   if(missing(Rev)){Rev="_R2"}
   
-  files<-list.files(reads, pattern=gsub("\\.", "\\.", extension))
+  files<-list.files(directory, pattern=gsub("\\.", "\\.", extension))
   
   if(!paired){
     output<-data.frame(`sample-id`=gsub(gsub("\\.", "\\.", extension), "", files), `absolute-filepath`=paste0(getwd(), "/", files), check.names = FALSE)
@@ -33,7 +33,7 @@ write_q2manifest<-function(outfile, directory, extension, paired){
       grepl(Rev, output$file)~"reverse-absolute-filepath",
       TRUE~"Error"
     )
-    if(sum(grep("Error", output$Read))==0){stop("Could not assign all reads to forward or reverse in paired mode.")}
+    if(!sum(grep("Error", output$Read))==0){stop("Could not assign all reads to forward or reverse in paired mode.")}
     output$`sample-id`<-gsub(Fwd, "", output$`sample-id`)
     output$`sample-id`<-gsub(Rev, "", output$`sample-id`)
     output<-spread(output, key=Read, value=file)
