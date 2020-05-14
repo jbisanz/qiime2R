@@ -209,7 +209,7 @@ A wrapper function called `qza_to_phyloseq()` is provided which links multiple `
 physeq<-qza_to_phyloseq(
     features="inst/artifacts/2020.2_moving-pictures/table.qza",
     tree="inst/artifacts/2020.2_moving-pictures/rooted-tree.qza",
-    "inst/artifacts/2020.2_moving-pictures/taxonomy.qza",
+    taxonomy="inst/artifacts/2020.2_moving-pictures/taxonomy.qza",
     metadata = "inst/artifacts/2020.2_moving-pictures/sample-metadata.tsv"
     )
 physeq
