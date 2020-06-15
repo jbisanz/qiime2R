@@ -43,7 +43,7 @@ artifact$version=read.table(paste0(tmp,"/",artifact$uuid, "/VERSION"))
 
   #get data dependent on format
 if(grepl("BIOMV", artifact$format)){
-  suppressWarnings(artifact$data<-as(biom_data(read_biom(paste0(tmp, "/", artifact$uui,"/data/feature-table.biom"))),"matrix")) #suppressing warning about \n characters
+  artifact$data<-read_q2biom(paste0(tmp, "/", artifact$uui,"/data/feature-table.biom"))
 } else if (artifact$format=="NewickDirectoryFormat"){
   artifact$data<-read.tree(paste0(tmp,"/",artifact$uuid,"/data/tree.nwk"))
 } else if (artifact$format=="DistanceMatrixDirectoryFormat") {

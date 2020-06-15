@@ -1,4 +1,4 @@
-# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.23*)
+# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.3*)
 
 ## Background
 The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure.
@@ -16,7 +16,8 @@ This package is trying to simplify the process of getting the artifact into R wi
 
 * ape (>= 5.2),
 * Biostrings (>= 2.46.0),
-* biomformat (>= 1.6.0),
+* rhdf5 (>= 2.28.0),
+* Matrix (>= 1.2-17),
 * phyloseq (>= 1.22.3),
 * Hmisc (>= 4.1-1),
 * yaml (>= 2.2.0),
@@ -36,6 +37,7 @@ This package is trying to simplify the process of getting the artifact into R wi
 * `is_q2metadata()` - A function to check if a file is a qiime2 metadata file.
 * `parse_taxonomy()` - A function to parse taxonomy strings and return a table where each column is a taxonomic class.
 * `parse_ordination()` - A function to parse the internal ordination format.
+* `read_q2biom` - A function for reading QIIME2 biom files in format v2.1
 
 ## Installing qiime2R
 
