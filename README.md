@@ -1,4 +1,4 @@
-# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.3*)
+# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.31*)
 
 ## Background
 The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure.
@@ -12,20 +12,6 @@ While it is possible to export data on a one-by-one basis from the qiime artifac
 
 This package is trying to simplify the process of getting the artifact into R without discarding any of the associated data through a simple `read_qza` function. The artifact is unpacked in to a temporary directory and the raw data and associated metadata are read into a named list (see below). Data are typically returned as either a data.frame, phylo object (trees), or DNAStringSets (nucleic acid sequences).
 
-## Dependencies
-
-* ape (>= 5.2),
-* Biostrings (>= 2.46.0),
-* rhdf5 (>= 2.28.0),
-* Matrix (>= 1.2-17),
-* phyloseq (>= 1.22.3),
-* Hmisc (>= 4.1-1),
-* yaml (>= 2.2.0),
-* tidyr (>= 0.8.3),
-* dplyr (>= 0.8.1),
-* stats,
-* utils
-
 ## Functions
 
 * `read_qza()` - Function for reading artifacts (.qza). 
@@ -38,6 +24,13 @@ This package is trying to simplify the process of getting the artifact into R wi
 * `parse_taxonomy()` - A function to parse taxonomy strings and return a table where each column is a taxonomic class.
 * `parse_ordination()` - A function to parse the internal ordination format.
 * `read_q2biom` - A function for reading QIIME2 biom files in format v2.1
+* `make_clr` - Transform feature table using centered log2 ratio.
+* `make_proportion` - Transform feature table to proportion (sum to 1).
+* `make_percent` - Transform feature to percent (sum to 100).
+* `interactive_table` - Create an interactive table in Rstudio viewer or rmarkdown html.
+* `summarize_taxa`- Create a list of tables with abundances sumed to each taxonomic level.
+* `taxa_barplot` - Create a stacked barplot using ggplot2.
+* `taxa_heatmap` - Create a heatmap of taxonomic abundances using gplot2.
 
 ## Installing qiime2R
 
@@ -361,7 +354,7 @@ Data:
 * [Taxonomy](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/taxonomy.qza)
 * [Feature Table](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/table.qza)
 
-Heat maps provide a very good overview of the composition of samples but tend to not perform well for complex samples or visualizing small differences. I will plot only the top 30 most abundant features (on average) and merge the remainder into a single classification.
+Heat maps provide a very good overview of the composition of samples but tend to not perform well for complex samples or visualizing small differences. qiime2R includes a function for making heatmaps called `taxa_heatmap()`.
 
 ```
 library(tidyverse)
@@ -369,38 +362,41 @@ library(qiime2R)
 
 metadata<-read_q2metadata("sample-metadata.tsv")
 SVs<-read_qza("table.qza")$data
-taxonomy<-read_qza("taxonomy.qza")$data
+taxonomy<-read_qza("taxonomy.qza")$data %>% parse_taxonomy()
 
-SVs<-apply(SVs, 2, function(x) x/sum(x)*100) #convert to percent
+taxasums<-summarize_taxa(SVs, taxonomy)$Genus
 
-SVsToPlot<-  
-  data.frame(MeanAbundance=rowMeans(SVs)) %>% #find the average abundance of a SV
-  rownames_to_column("Feature.ID") %>%
-  arrange(desc(MeanAbundance)) %>%
-  top_n(30, MeanAbundance) %>%
-  pull(Feature.ID) #extract only the names from the table
-  
-SVs %>%
-  as.data.frame() %>%
-  rownames_to_column("Feature.ID") %>%
-  gather(-Feature.ID, key="SampleID", value="Abundance") %>%
-  mutate(Feature.ID=if_else(Feature.ID %in% SVsToPlot,  Feature.ID, "Remainder")) %>% #flag features to be collapsed
-  group_by(SampleID, Feature.ID) %>%
-  summarize(Abundance=sum(Abundance)) %>%
-  left_join(metadata) %>%
-  mutate(NormAbundance=log10(Abundance+0.01)) %>% # do a log10 transformation after adding a 0.01% pseudocount. Could also add 1 read before transformation to percent
-  left_join(taxonomy) %>%
-  mutate(Feature=paste(Feature.ID, Taxon)) %>%
-  mutate(Feature=gsub("[kpcofgs]__", "", Feature)) %>% # trim out leading text from taxonomy string
-  ggplot(aes(x=SampleID, y=Feature, fill=NormAbundance)) +
-  geom_tile() +
-  facet_grid(~`body-site`, scales="free_x") +
-  theme_q2r() +
-  theme(axis.text.x=element_text(angle=45, hjust=1)) +
-  scale_fill_viridis_c(name="log10(% Abundance)")
-  ggsave("heatmap.pdf", height=4, width=11, device="pdf") # save a PDF 3 inches by 4 inches
+taxa_heatmap(taxasums, metadata, "body-site")
+
+ggsave("heatmap.pdf", height=4, width=8, device="pdf") # save a PDF 4 inches by 8 inches
 ```
 ![heatmap](https://github.com/jbisanz/qiime2R/raw/master/images/heatmap.png)
+
+### Making a taxonomic barplot
+
+Data:
+* [Metadata](https://data.qiime2.org/2020.2/tutorials/moving-pictures/sample_metadata.tsv)
+* [Taxonomy](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/taxonomy.qza)
+* [Feature Table](https://docs.qiime2.org/2020.2/data/tutorials/moving-pictures/table.qza)
+
+Heat maps provide a very good overview of the composition of samples but tend to not perform well for complex samples or visualizing small differences. qiime2R includes a function for making heatmaps called `taxa_heatmap()`.
+
+```
+library(tidyverse)
+library(qiime2R)
+
+metadata<-read_q2metadata("sample-metadata.tsv")
+SVs<-read_qza("table.qza")$data
+taxonomy<-read_qza("taxonomy.qza")$data %>% parse_taxonomy()
+
+taxasums<-summarize_taxa(SVs, taxonomy)$Genus
+
+taxa_barplot(taxasums, metadata, "body-site")
+
+ggsave("barplot.pdf", height=4, width=8, device="pdf") # save a PDF 4 inches by 8 inches
+```
+![barplot](https://github.com/jbisanz/qiime2R/raw/master/images/barplot.png)
+
 
 ### Differential Abundance Analysis
 

@@ -1,23 +1,58 @@
 importFrom(yaml, read_yaml)
+
 importFrom(ape, read.tree)
+
 importFrom(Biostrings, readDNAStringSet)
 importFrom(Biostrings, readDNAMultipleAlignment)
+
 importFrom(phyloseq, phyloseq)
 importFrom(phyloseq, otu_table)
 importFrom(phyloseq, tax_table)
 importFrom(phyloseq, sample_data)
 importFrom(phyloseq, phy_tree)
+
 importFrom(Hmisc, list.tree)
+
 importFrom(stats, as.dist)
+
 importFrom(utils, read.csv, read.table, unzip)
+
 importFrom(tools, toTitleCase)
+
 importFrom(tidyr, separate)
 importFrom(tidyr, `%>%`)
 importFrom(tidyr, spread)
+importFrom(tidyr, gather)
+importFrom(tidyr, unite)
+
+importFrom(dplyr, mutate)
 importFrom(dplyr, case_when)
 importFrom(dplyr, if_else)
+importFrom(dplyr, summarize)
+importFrom(dplyr, group_by)
+importFrom(dplyr, ungroup)
+
+importFrom(tibble, rownames_to_column)
+importFrom(tibble, column_to_rownames)
+
 importFrom(Matrix, sparseMatrix)
+
 importFrom(rhdf5, h5read)
+
+importFrom(zCompositions, cmultRepl)
+
+importFrom(DT, datatable)
+
+importFrom(ggplot2, ggplot)
+importFrom(ggplot2, aes)
+importFrom(ggplot2, geom_tile)
+importFrom(ggplot2, geom_bar)
+importFrom(ggplot2, theme)
+importFrom(ggplot2, element_text)
+importFrom(ggplot2, coord_cartesian)
+importFrom(ggplot2, xlab)
+importFrom(ggplot2, ylab)
+importFrom(ggplot2, scale_fill_viridis_c)
 
 export(read_qza)
 export(qza_to_phyloseq)
@@ -29,3 +64,10 @@ export(parse_ordination)
 export(write_q2manifest)
 export(theme_q2r)
 export(read_q2biom)
+export(make_clr)
+export(make_percent)
+export(make_proportion)
+export(interactive_table)
+export(summarize_taxa)
+export(taxa_barplot)
+export(taxa_heatmap)
