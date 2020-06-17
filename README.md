@@ -1,4 +1,4 @@
-# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.31*)
+# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.32*)
 
 ## Background
 The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure.
