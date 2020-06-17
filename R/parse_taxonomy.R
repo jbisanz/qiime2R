@@ -15,7 +15,7 @@ parse_taxonomy <- function(taxonomy, tax_sep, trim_extra){
   if(missing(taxonomy)){stop("Taxonomy Table not supplied.")}
   if(missing(trim_extra)){trim_extra=TRUE}
   if(missing(tax_sep)){tax_sep="; |;"}
-  if(sum(colnames(taxonomy)==c("Feature.ID","Taxon","Confidence"))!=3){stop("Table does not match expected format (conames(obj) are Feature.ID, Taxon, Confience)")}
+  if(sum(colnames(taxonomy) %in% c("Feature.ID","Taxon","Confidence", "Consensus"))!=3){stop("Table does not match expected format (colnames(obj) are Feature.ID, Taxon, (Confidence OR Consensus))")}
 
   taxonomy$Confidence<-NULL
   if(trim_extra){
