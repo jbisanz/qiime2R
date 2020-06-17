@@ -16,7 +16,7 @@ Depends: R (>= 3.4.1)
 Imports:
     ape (>= 5.2),
     Biostrings (>= 2.46.0),
-    rhdf5 (>= 2.28.0),
+    rhdf5 (>= 2.26.2),
     Matrix (>= 1.2-17),
     DT (>= 0.2),
     zCompositions (>= 1.0.3.1),
