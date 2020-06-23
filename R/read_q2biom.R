@@ -23,10 +23,10 @@ read_q2biom <- function(file) {
       p=hdata$observation$matrix$indptr,
       j=hdata$observation$matrix$indices,
       x=as.numeric(hdata$observation$matrix$data),
-      index1=FALSE
+      index1=FALSE,
+      dims=c(length(hdata$observation$ids), length(hdata$sample$ids)),
+      dimnames=list(hdata$observation$ids,hdata$sample$ids)
     )
-  colnames(ftable)<-hdata$sample$ids
-  rownames(ftable)<-hdata$observation$ids
   
   return(as.matrix(ftable))
 }
