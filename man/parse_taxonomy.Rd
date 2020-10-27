@@ -7,11 +7,13 @@
 parse_taxonomy(taxonomy, tax_sep, trim_extra)
 }
 \arguments{
-\item{taxonomy}{the imported taxonomy object (the result of read_qza() containing columns Feature.ID, Taxon, and Confidence)}
+\item{taxonomy}{a table-like object containing the columns Feature.ID and Taxon. Can be imported using read_qza(file)$data.}
 
 \item{tax_sep}{The separator between taxonomic levels. Defaults to one compatible with both GreenGenes and SILVA ("; " OR ";")}
 
-\item{trim_extra}{Remove leading characters from taxonomic levels: ex: k__ or D_0__. TRUE/FALSE. default=TRUE}
+\item{trim_extra}{Remove leading characters from taxonomic levels: ex: k__ or D_0__. TRUE/FALSE. default=TRUE 
+
+Note: Assumes an assignment has been made to all levels. Fills missing assignments with NA.}
 }
 \value{
 a data.frame with feature IDs as row names and the columns: Kingdom, Phylum, Class, Order, Family, Genus, Species
@@ -20,5 +22,5 @@ a data.frame with feature IDs as row names and the columns: Kingdom, Phylum, Cla
 Parse Q2 taxonomy
 }
 \examples{
-\dontrun{taxonomy<-parse_taxonomy(taxonomy_artifact)}
+\dontrun{taxonomy<-parse_taxonomy(taxonomy)}
 }

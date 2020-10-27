@@ -19,8 +19,8 @@ read_q2metadata <- function(file) {
   defline<-suppressWarnings(readLines(file)[2])
   defline<-strsplit(defline, split="\t")[[1]]
   
-  defline[grep("numeric", defline)]<-"double"
-  defline[grep("categorical|q2:types", defline)]<-"factor"
+  defline[grep("numeric", tolower(defline))]<-"double"
+  defline[grep("categorical|q2:types", tolower(defline))]<-"factor"
   defline[defline==""]<-"factor"
   
   coltitles<-strsplit(suppressWarnings(readLines(file)[1]), split='\t')[[1]]
