@@ -1,7 +1,7 @@
 Package: qiime2R
 Type: Package
 Title: qiime2R
-Version: 0.99.35
+Version: 0.99.4
 Author: Jordan Bisanz <jordan.bisanz@gmail.com>
 Maintainer: Jordan Bisanz <jordan.bisanz@gmail.com>
 Description: Importing QIIME2 artifacts and associated data into R sessions.
@@ -19,6 +19,7 @@ Imports:
     rhdf5 (>= 2.26.2),
     Matrix (>= 1.2-17),
     DT (>= 0.2),
+    data.table (>= 1.12.8),
     zCompositions (>= 1.0.3.1),
     phyloseq (>= 1.22.3),
     ggplot2 (>= 2.2.1),

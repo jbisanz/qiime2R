@@ -4,6 +4,5 @@
 .Ruserdata
 qiime2R.Rproj
 .DS_Store
-..Rcheck
 sandbox.R
 inst/artifacts/
