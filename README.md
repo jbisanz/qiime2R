@@ -1,4 +1,4 @@
-# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.4*)
+# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.5*)
 
 ## Background
 The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure.
@@ -23,14 +23,16 @@ This package is trying to simplify the process of getting the artifact into R wi
 * `is_q2metadata()` - A function to check if a file is a qiime2 metadata file.
 * `parse_taxonomy()` - A function to parse taxonomy strings and return a table where each column is a taxonomic class.
 * `parse_ordination()` - A function to parse the internal ordination format.
-* `read_q2biom` - A function for reading QIIME2 biom files in format v2.1
-* `make_clr` - Transform feature table using centered log2 ratio.
-* `make_proportion` - Transform feature table to proportion (sum to 1).
-* `make_percent` - Transform feature to percent (sum to 100).
-* `interactive_table` - Create an interactive table in Rstudio viewer or rmarkdown html.
-* `summarize_taxa`- Create a list of tables with abundances sumed to each taxonomic level.
-* `taxa_barplot` - Create a stacked barplot using ggplot2.
-* `taxa_heatmap` - Create a heatmap of taxonomic abundances using gplot2.
+* `read_q2biom()` - A function for reading QIIME2 biom files in format v2.1
+* `make_clr()` - Transform feature table using centered log2 ratio.
+* `make_proportion()` - Transform feature table to proportion (sum to 1).
+* `make_percent()` - Transform feature to percent (sum to 100).
+* `interactive_table()` - Create an interactive table in Rstudio viewer or rmarkdown html.
+* `summarize_taxa()`- Create a list of tables with abundances sumed to each taxonomic level.
+* `taxa_barplot()` - Create a stacked barplot using ggplot2.
+* `taxa_heatmap()` - Create a heatmap of taxonomic abundances using gplot2.
+* `corner()` - Show top corner of a large table-like obejct.
+* `min_nonzero()` - Find the smallest non-zero, non-NA in a numeric vector.
 
 ## Installing qiime2R
 
