@@ -1,8 +1,8 @@
 #' Utility Functions
 #'
-#' Perform misc utility functions
-#' * `corner(table, nrow=5, ncol=5)` show the the top left corner of a data.frame/tibble/matrix.
-#' * `min_nonzero()` Find the smallest non-zero, non-NA value in a vector.
+#' Perform misc utility functions:
+#' @param corner() show the the top left corner of a data.frame/tibble/matrix.
+#' @param min_nonzero() Find the smallest non-zero, non-NA value in a vector.
 #' 
 #' @export
 

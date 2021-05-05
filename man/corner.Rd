@@ -6,8 +6,11 @@
 \usage{
 corner(table, nrow, ncol)
 }
+\arguments{
+\item{corner()}{show the the top left corner of a data.frame/tibble/matrix.}
+
+\item{min_nonzero()}{Find the smallest non-zero, non-NA value in a vector.}
+}
 \description{
-Perform misc utility functions
-* `corner(table, nrow=5, ncol=5)` show the the top left corner of a data.frame/tibble/matrix.
-* `min_nonzero()` Find the smallest non-zero, non-NA value in a vector.
+Perform misc utility functions:
 }

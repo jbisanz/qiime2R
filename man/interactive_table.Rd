@@ -7,7 +7,7 @@
 interactive_table(table, nrow)
 }
 \arguments{
-\item{table}{path to the input file, ex: file="~/data/moving_pictures/table.qza"}
+\item{table}{a data.frame/tibble/matrix}
 
 \item{nrow}{number of rows to display in table (default=10)}
 }

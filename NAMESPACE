@@ -10,6 +10,7 @@ importFrom(phyloseq, otu_table)
 importFrom(phyloseq, tax_table)
 importFrom(phyloseq, sample_data)
 importFrom(phyloseq, phy_tree)
+importFrom(phyloseq, rarefy_even_depth)
 
 importFrom(Hmisc, list.tree)
 
@@ -77,3 +78,5 @@ export(taxa_heatmap)
 export(decode_golay)
 export(corner)
 export(min_nonzero)
+export(subsample_table)
+export(filter_features)

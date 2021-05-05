@@ -2,7 +2,7 @@
 #'
 #' Uses DT:datatable to embed an interactive table with export options in an R session or markdown document
 #'
-#' @param table path to the input file, ex: file="~/data/moving_pictures/table.qza"
+#' @param table a data.frame/tibble/matrix
 #' @param nrow number of rows to display in table (default=10)
 #'
 #' @examples \dontrun{interactive_table(metadata)}

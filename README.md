@@ -1,4 +1,4 @@
-# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.5*)
+# Tutorial: Integrating QIIME2 and R for data visualization and analysis using qiime2R (*v0.99.6*)
 
 ## Background
 The [qiime artifact](https://docs.qiime2.org/2018.4/concepts/#data-files-qiime-2-artifacts) is a method for storing the input and outputs for [QIIME2](https://qiime2.org/) along with associated metadata and provenance information about how the object was formed. This method of storing objects has a number of obvious advantages; however, on the surface it does not lend itself to easy import to R for the R-minded data scientist. In reality, the .qza file is a compressed directory with an intuitive structure.
@@ -18,7 +18,7 @@ This package is trying to simplify the process of getting the artifact into R wi
 * `qza_to_phyloseq()` - Imports multiple artifacts to produce a phyloseq object.
 * `read_q2metadata()` - Reads qiime2 metadata file (containing q2-types definition line)
 * `write_q2manifest()` - Writes a read manifest file to import data into qiime2
-* `theme_q2r()` - A ggplot2 theme for publication-type figures.
+* `theme_q2r()` - A ggplot2 theme for for clean figures.
 * `print_provenance()` - A function to display provenance information.
 * `is_q2metadata()` - A function to check if a file is a qiime2 metadata file.
 * `parse_taxonomy()` - A function to parse taxonomy strings and return a table where each column is a taxonomic class.
@@ -33,6 +33,8 @@ This package is trying to simplify the process of getting the artifact into R wi
 * `taxa_heatmap()` - Create a heatmap of taxonomic abundances using gplot2.
 * `corner()` - Show top corner of a large table-like obejct.
 * `min_nonzero()` - Find the smallest non-zero, non-NA in a numeric vector.
+* `subsample_table()` - Subsample a table with or without replacement.
+* `filter_features()` - Remove low abundance features by number of counts and number of samples they appear in.
 
 ## Installing qiime2R
 
