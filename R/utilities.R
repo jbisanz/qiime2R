@@ -21,3 +21,5 @@ min_nonzero<-function(data){
   data<-data[data!=0]
   return(min(data))
 }
+
+mean_sd=function(x){data.frame(y=mean(x), ymin=mean(x)-sd(x), ymax=mean(x)+sd(x))}

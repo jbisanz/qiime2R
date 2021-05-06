@@ -33,6 +33,7 @@ This package is trying to simplify the process of getting the artifact into R wi
 * `taxa_heatmap()` - Create a heatmap of taxonomic abundances using gplot2.
 * `corner()` - Show top corner of a large table-like obejct.
 * `min_nonzero()` - Find the smallest non-zero, non-NA in a numeric vector.
+* `mean_sd()` - Return mean and standard deviation for plotting.
 * `subsample_table()` - Subsample a table with or without replacement.
 * `filter_features()` - Remove low abundance features by number of counts and number of samples they appear in.
 
