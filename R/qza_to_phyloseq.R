@@ -26,7 +26,7 @@ if(missing(tmp)){tmp <- tempdir()}
   argstring<-""
 
   if(!missing(features)){
-    features<-read_qza(features, tmp=tmp)$data
+    features<-as.data.frame(read_qza(features, tmp=tmp)$data)
     argstring<-paste(argstring, "otu_table(features, taxa_are_rows=T),")
   }
 
