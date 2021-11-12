@@ -1,6 +1,6 @@
 #' Functions for decoding golay barcodes
 #'
-#' This is a port of the original QIIME2 python code from q2_demux/_ecc.py into R made by Cecilia Knoecker 2020/11/17 and then added into qiime2R by JB
+#' This is a port of the original QIIME2 python code from q2_demux/_ecc.py into R made by Cecilia Noecker 2020/11/17 and then added into qiime2R by JB
 #' @param barcodes a vector of barcodes to be corrected
 #' @return a data.table with the following columns: original_bc, corrected_bc, n_errors
 #'
@@ -136,6 +136,9 @@ decode_golay<-function(barcodes){
   seq_table<-data.table(StartingBarcode=barcodes)
   #taking the core of CN's vectorized function
     seq_table[,GoodBarcode:=grepl("^[ACTG]*$", StartingBarcode)] #ignore barcodes with Ns
+    if(nrow(seq_table[GoodBarcode == T]) == 0) { 
+	stop("No valid barcodes found. Do your fastq files have index sequences in the sequence headers? They are required for Golay decoding of undetermined reads. Consider checking your bcl2fastq settings and re-running FASTQ generation.")
+    }
     seq_table[GoodBarcode==T ,Bits:=seq_to_bits(StartingBarcode)]
     seq_table[GoodBarcode==T, BitsNumeric:=lapply(Bits, function(x){
       as.numeric(strsplit(x, split = "")[[1]])
