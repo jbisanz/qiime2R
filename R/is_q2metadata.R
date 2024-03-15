@@ -12,6 +12,9 @@
 #'
 
 is_q2metadata <- function(file){
+
+  if (!file.exists(file)){stop("Input metadata file (",file,") not found. Please check path and/or use list.files() to see files in current working directory.")}
+
   suppressWarnings(
   if(grepl("^#q2:types", readLines(file)[2])){return(TRUE)}else{return(FALSE)}
   )
