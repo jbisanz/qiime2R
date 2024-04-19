@@ -220,6 +220,39 @@ physeq
 ## phy_tree()    Phylogenetic Tree: [ 759 tips and 757 internal nodes ]
 ```
 
+## Creating a TreeSummarizedExperiment (TSE) Object
+
+A wrapper function called `qza_to_tse()` is provided which links multiple `read_qza()` calls together to create a TSE object for subsequent analysis. You may find some useful tutorials on :
+[OMA tutorials](https://jserizay.com/OMA/docs/devel/). An example usage is shown below:
+
+```
+tse<-qza_to_tse(
+    features="inst/artifacts/2020.2_moving-pictures/table.qza",
+    tree="inst/artifacts/2020.2_moving-pictures/rooted-tree.qza",
+    taxonomy="inst/artifacts/2020.2_moving-pictures/taxonomy.qza",
+    metadata = "inst/artifacts/2020.2_moving-pictures/sample-metadata.tsv"
+    )
+physeq
+## TreeSummarizedExperiment 
+## dim: 770 34 
+## metadata(0):
+## assays(1): counts
+## rownames(770): 4b5eeb300368260019c1fbc7a3c718fc
+## fe30ff0f71a38a39cf1717ec2be3a2fc ... 98d250a339a635f20e26397dafc6ced3
+## 1830c14ead81ad012f1db0e12f8ab6a4
+## rowData names(7): Kingdom Phylum ... Genus Species
+## colnames(34): L1S105 L1S140 ... L6S68 L6S93
+## colData names(8): barcode.sequence body.site ... reported.antibiotic.usage
+## days.since.experiment.start
+## reducedDimNames(0):
+## mainExpName: NULL
+## altExpNames(0):
+## rowLinks: a LinkDataFrame (770 rows)
+## rowTree: 1 phylo tree(s) (770 leaves)
+## colLinks: NULL
+## colTree: NULL
+```
+
 ***
 
 ## Example Visualizations
