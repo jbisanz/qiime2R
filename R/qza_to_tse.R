@@ -12,7 +12,6 @@
 #' @param taxonomy file path for artifact containg taxonomy
 #' @param metadata file path for a qiime2-compliant TSV metadata file
 #' @param tmp a temporary directory that the object will be decompressed to.
-#' @return a TreeSummarizedExperiment object
 #' \code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
 #' 
 #' @import TreeSummarizedExperiment
@@ -20,8 +19,8 @@
 #' @importFrom SummarizedExperiment colData colData<-
 #' 
 #' @examples 
-#' (Data is from tutorial
-#' \url{https://docs.qiime2.org/2020.2/tutorials/moving-pictures/)}
+#' # (Data is from tutorial
+#' # \url{https://docs.qiime2.org/2020.2/tutorials/moving-pictures/)}
 #' 
 #' \donttest{tse <-qza_to_tse(
 #'     features="path_to_table.qza",
@@ -33,13 +32,13 @@
 #' @export
 #' 
 #' @author
-#' Leo Lahti
-#' Noah de Gunst
+#' Leo Lahti and Noah de Gunst
 
 qza_to_tse <- function(features, tree, taxonomy, metadata, tmp) {
     # Input check
     if(missing(features)){
-        stop("No features have been specified. Please specify one to create a TSE from qza data.")
+        stop("No features have been specified. Please specify one to create a 
+             TreeSummarizedExperiment object from qza data.")
     }
     
     # If no temporary extract location is specified, use default
