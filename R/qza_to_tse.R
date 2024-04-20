@@ -36,7 +36,7 @@
 #' Leo Lahti
 #' Noah de Gunst
 
-qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
+qza_to_tse <- function(features, tree, taxonomy, metadata, tmp) {
     # Input check
     if(missing(features)){
         stop("No features have been specified. Please specify one to create a TSE from qza data.")
