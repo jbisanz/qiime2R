@@ -1,11 +1,11 @@
 #' Generates a TreeSummarizedExperiment (TSE) object from .qza artifacts
-#'\code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
+#' \code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
 #'
-#' Construct a TreeSummarizedExperiment object from multiple 
-#' qiime2 artifacts (.qza). 
-#' '\code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
-#' Embedded metadata for provenance is not maintained in this function and 
-#' instead \code{read_qza()} should be used.
+#' Construct a '\code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
+#' object from multiple qiime2 artifacts (.qza). 
+#' 
+#' Embedded metadata for provenance is maintained in this function and 
+#' both \code{read_qza()} and (\code{metadata(tse)}) can be used.
 #' 
 #' @param features file path for artifact containing a feature (OTU/SV) table
 #' @param tree file path for artifact containing a tree

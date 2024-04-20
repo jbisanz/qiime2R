@@ -31,4 +31,4 @@ Imports:
     stats,
     utils,
     S4Vectors,
-    mia
+    TreeSummarizedExperiment
