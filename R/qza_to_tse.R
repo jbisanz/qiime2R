@@ -3,9 +3,9 @@
 #'
 #' Construct a TreeSummarizedExperiment object from multiple 
 #' qiime2 artifacts (.qza). 
+#' '\code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
 #' Embedded metadata for provenance is not maintained in this function and 
 #' instead \code{read_qza()} should be used.
-#' 
 #' 
 #' @param features file path for artifact containing a feature (OTU/SV) table
 #' @param tree file path for artifact containing a tree
@@ -20,17 +20,21 @@
 #' @importFrom SummarizedExperiment colData colData<-
 #' 
 #' @examples 
-#' # (Data is from tutorial
-#' https://docs.qiime2.org/2020.2/tutorials/moving-pictures/)
+#' (Data is from tutorial
+#' \url{https://docs.qiime2.org/2020.2/tutorials/moving-pictures/)}
 #' 
-#' tse <-qza_to_tse(
-#' features="path_to_table.qza",
-#' tree="path_to_rooted-tree.qza",
-#' taxonomy="path_to_taxonomy.qza",
-#' metadata = "path_to_sample-metadata.tsv"
-#' )
+#' \donttest{tse <-qza_to_tse(
+#'     features="path_to_table.qza",
+#'     tree="path_to_rooted-tree.qza",
+#'     taxonomy="path_to_taxonomy.qza",
+#'     metadata = "path_to_sample-metadata.tsv"
+#' )}
 #' 
 #' @export
+#' 
+#' @author
+#' Leo Lahti
+#' Noah de Gunst
 
 qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
     # Input check
@@ -42,13 +46,17 @@ qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
     if(missing(tmp)){tmp <- tempdir()}
     
     if(!missing(features)){
-        # Read the qza features as a matrix
-        features <- as.matrix(read_qza(features, tmp=tmp)$data)
+        # Read the qza features
+        feat <- read_qza(features, tmp=tmp)
+        # Transform the data to a matrix
+        features <- as.matrix(feat$data)
         # Create a list of assays
-        assays <- S4Vectors::SimpleList(counts =features)
+        assays <- S4Vectors::SimpleList(counts=features)
+        # Get the metadata
+        meta <- feat
+        meta$data <- NULL # remove data as it is put in features
         
     }
-    
     
     if(!missing(taxonomy)){
         # Read the taxonomy data
@@ -58,24 +66,21 @@ qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
         rowData <- S4Vectors::DataFrame(data.frame(rowData))
     }
     else{
-        # Fills the taxonomy with zero's if no taxonomy table is specified 
+        # Creates empty table with zero columns if no taxonomy table is specified 
         rowData <- S4Vectors::make_zero_col_DFrame(nrow(assays$counts))
     }
     # Store the rownames
     rownames(rowData) <- rownames(assays$counts)
     
-    
     if(!missing(metadata)){
         # Reads metadata
         if(is_q2metadata(metadata)){
             colData <- read_q2metadata(metadata)
-            colData$SampleID <- NULL # Removes sampleID column
-        } else{
+        } else {
             colData <- read.table(metadata, row.names=1, sep='\t', quote="", header=TRUE)
         }
         # Converts to S4 DataFrame
         colData <- S4Vectors::DataFrame(data.frame(colData)) 
-        
         
     }
     else{
@@ -98,5 +103,6 @@ qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
                              rowData = rowData,
                              colData = colData,
                              rowTree = rowTree,
-                             referenceSeq = NULL)
+                             referenceSeq = NULL,
+                             metadata = meta)
 }

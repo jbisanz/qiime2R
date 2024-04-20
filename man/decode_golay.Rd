@@ -13,5 +13,5 @@ decode_golay(barcodes)
 a data.table with the following columns: original_bc, corrected_bc, n_errors
 }
 \description{
-This is a port of the original QIIME2 python code from q2_demux/_ecc.py into R made by Cecilia Knoecker 2020/11/17 and then added into qiime2R by JB
+This is a port of the original QIIME2 python code from q2_demux/_ecc.py into R made by Cecilia Noecker 2020/11/17 and then added into qiime2R by JB
 }
