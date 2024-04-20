@@ -1,20 +1,35 @@
-#' generates a TreeSummarizedExperiment (TSE) object from .qza artifacts
+#' Generates a TreeSummarizedExperiment (TSE) object from .qza artifacts
+#'\code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
 #'
-#' Construct a TreeSummarizedExperiment object from multiple qiime2 artifacts (.qza). 
-#' Embedded metadata for provenance is not maintained in this function and instead read_qza() should be used.
+#' Construct a TreeSummarizedExperiment object from multiple 
+#' qiime2 artifacts (.qza). 
+#' Embedded metadata for provenance is not maintained in this function and 
+#' instead \code{read_qza()} should be used.
+#' 
 #' 
 #' @param features file path for artifact containing a feature (OTU/SV) table
-#' @param tree file path for  artifact containing a tree
+#' @param tree file path for artifact containing a tree
 #' @param taxonomy file path for artifact containg taxonomy
 #' @param metadata file path for a qiime2-compliant TSV metadata file
 #' @param tmp a temporary directory that the object will be decompressed to.
-#' @return a TSE object
+#' @return a TreeSummarizedExperiment object
+#' \code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
 #' 
-#' @importFrom mia TreeSummarizedExperiment
+#' @import TreeSummarizedExperiment
 #' @importFrom S4Vectors SimpleList DataFrame make_zero_col_DFrame
 #' @importFrom SummarizedExperiment colData colData<-
 #' 
-#' @examples \dontrun{physeq<-qza_to_phyloseq(features="data/table.qza", tree="data/rooted-tree.qza", taxonomy="data/taxonomy.qza", metdata="data/sample-metadata.qza")}
+#' @examples 
+#' # (Data is from tutorial
+#' https://docs.qiime2.org/2020.2/tutorials/moving-pictures/)
+#' 
+#' tse <-qza_to_tse(
+#' features="path_to_table.qza",
+#' tree="path_to_rooted-tree.qza",
+#' taxonomy="path_to_taxonomy.qza",
+#' metadata = "path_to_sample-metadata.tsv"
+#' )
+#' 
 #' @export
 
 qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
@@ -28,19 +43,19 @@ qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
     
     if(!missing(features)){
         # Read the qza features as a matrix
-        features<-as.matrix(read_qza(features, tmp=tmp)$data)
+        features <- as.matrix(read_qza(features, tmp=tmp)$data)
         # Create a list of assays
-        assays <- SimpleList(counts =features)
+        assays <- S4Vectors::SimpleList(counts =features)
         
     }
     
     
     if(!missing(taxonomy)){
         # Read the taxonomy data
-        rowData<-read_qza(taxonomy, tmp=tmp)$data
-        rowData<-parse_taxonomy(rowData)
+        rowData <- read_qza(taxonomy, tmp=tmp)$data
+        rowData <- parse_taxonomy(rowData)
         # Convert to S4 DataFrame
-        rowData<-DataFrame(data.frame(rowData))
+        rowData <- S4Vectors::DataFrame(data.frame(rowData))
     }
     else{
         # Fills the taxonomy with zero's if no taxonomy table is specified 
@@ -53,12 +68,13 @@ qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
     if(!missing(metadata)){
         # Reads metadata
         if(is_q2metadata(metadata)){
-            colData<-read_q2metadata(metadata)
+            colData <- read_q2metadata(metadata)
             colData$SampleID <- NULL # Removes sampleID column
         } else{
-            colData<-read.table(metadata, row.names=1, sep='\t', quote="", header=TRUE)
+            colData <- read.table(metadata, row.names=1, sep='\t', quote="", header=TRUE)
         }
-        colData <- DataFrame(data.frame(colData)) # Converts to S4 DataFrame
+        # Converts to S4 DataFrame
+        colData <- S4Vectors::DataFrame(data.frame(colData)) 
         
         
     }
@@ -78,7 +94,7 @@ qza_to_tse<- function(features,tree,taxonomy,metadata, tmp) {
     }
 
     # Creates a TSE from the given data
-    TreeSummarizedExperiment(assays = assays,
+    TreeSummarizedExperiment::TreeSummarizedExperiment(assays = assays,
                              rowData = rowData,
                              colData = colData,
                              rowTree = rowTree,
