@@ -31,13 +31,13 @@
 #' 
 #' @export
 #' 
-#' @author
-#' Leo Lahti and Noah de Gunst
+#' @author Leo Lahti and Noah de Gunst
 
 qza_to_tse <- function(features, tree, taxonomy, metadata, tmp) {
     # Input check
     if(missing(features)){
-        stop("No features have been specified. Please specify one to create a 
+        stop("No file path for features has been specified. 
+             Please specify one to create a 
              TreeSummarizedExperiment object from qza data.")
     }
     
