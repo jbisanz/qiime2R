@@ -5,4 +5,4 @@ Changes for v0.99
 - qza_to_phyloseq is less strict about objects included in phyloseq object
 - added vignette and help
 - the function qza_to_tse has been added, facilitating interoperability
-between qiime2R and R/Bioc packages supporting TreeSummarizedExperiment
+  between qiime2R and R/Bioc packages supporting TreeSummarizedExperiment

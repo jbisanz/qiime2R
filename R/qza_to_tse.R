@@ -1,17 +1,13 @@
+#' Generate TreeSummarizedExperiment object from QIIME2 artifacts
+#' 
 #' Generates a TreeSummarizedExperiment (TSE) object from .qza artifacts
 #' \code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
 #'
-#' Construct a '\code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
-#' object from multiple qiime2 artifacts (.qza). 
-#' 
+#' @details 
 #' Embedded metadata for provenance is maintained in this function and 
 #' both \code{read_qza()} and (\code{metadata(tse)}) can be used.
 #' 
-#' @param features file path for artifact containing a feature (OTU/SV) table
-#' @param tree file path for artifact containing a tree
-#' @param taxonomy file path for artifact containg taxonomy
-#' @param metadata file path for a qiime2-compliant TSV metadata file
-#' @param tmp a temporary directory that the object will be decompressed to.
+#' @inheritParams qza_to_phyloseq
 #' \code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
 #' 
 #' @import TreeSummarizedExperiment
@@ -22,27 +18,27 @@
 #' # (Data is from tutorial
 #' # \url{https://docs.qiime2.org/2020.2/tutorials/moving-pictures/)}
 #' 
-#' \donttest{tse <-qza_to_tse(
+#' \donttest{tse <- qza_to_tse(
 #'     features="path_to_table.qza",
 #'     tree="path_to_rooted-tree.qza",
 #'     taxonomy="path_to_taxonomy.qza",
 #'     metadata = "path_to_sample-metadata.tsv"
 #' )}
 #' 
-#' @export
-#' 
 #' @author Leo Lahti and Noah de Gunst
+#' 
+#' @export
 
 qza_to_tse <- function(features, tree, taxonomy, metadata, tmp) {
+    # If no temporary extract location is specified, use default
+    if(missing(tmp)){tmp <- tempdir()}
+  
     # Input check
     if(missing(features)){
         stop("No file path for features has been specified. 
              Please specify one to create a 
              TreeSummarizedExperiment object from qza data.")
     }
-    
-    # If no temporary extract location is specified, use default
-    if(missing(tmp)){tmp <- tempdir()}
     
     if(!missing(features)){
         # Read the qza features
@@ -54,7 +50,6 @@ qza_to_tse <- function(features, tree, taxonomy, metadata, tmp) {
         # Get the metadata
         meta <- feat
         meta$data <- NULL # remove data as it is put in features
-        
     }
     
     if(!missing(taxonomy)){
@@ -91,7 +86,7 @@ qza_to_tse <- function(features, tree, taxonomy, metadata, tmp) {
     
     if(!missing(tree)){
         # Reads the taxonomy tree if one is specified
-        rowTree<-read_qza(tree, tmp=tmp)$data
+        rowTree <- read_qza(tree, tmp=tmp)$data
     }
     else {
         rowTree <- NULL
