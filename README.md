@@ -220,6 +220,23 @@ physeq
 ## phy_tree()    Phylogenetic Tree: [ 759 tips and 757 internal nodes ]
 ```
 
+## Creating a TreeSummarizedExperiment (TSE) Object
+
+A wrapper function called `qza_to_tse()` is provided which links multiple `read_qza()` calls together to create a TSE object for subsequent analysis. You may find some useful tutorials on:
+[OMA tutorials](https://microbiome.github.io/OMA/docs/devel/). An example usage is shown below:
+
+```
+# Download the required files
+
+download.file("https://docs.qiime2.org/2018.4/data/tutorials/moving-pictures/table.qza", "table.qza")
+download.file("https://docs.qiime2.org/2018.4/data/tutorials/moving-pictures/rooted-tree.qza", "rooted-tree.qza")
+download.file("https://docs.qiime2.org/2018.4/data/tutorials/moving-pictures/taxonomy.qza", "taxonomy.qza")
+download.file("https://data.qiime2.org/2018.4/tutorials/moving-pictures/sample_metadata.tsv", "sample_metadata.tsv")
+
+tse <- qza_to_tse(features="table.qza", taxonomy = "taxonomy.qza", tree = "rooted-tree.qza", metadata="sample_metadata.tsv")
+
+```
+
 ***
 
 ## Example Visualizations

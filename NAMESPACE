@@ -60,6 +60,7 @@ importFrom(ggplot2, scale_fill_viridis_c)
 
 export(read_qza)
 export(qza_to_phyloseq)
+export(qza_to_tse)
 export(print_provenance)
 export(read_q2metadata)
 export(is_q2metadata)
