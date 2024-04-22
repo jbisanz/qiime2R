@@ -1,7 +1,6 @@
 #' Generate TreeSummarizedExperiment object from QIIME2 artifacts
 #' 
-#' Generates a TreeSummarizedExperiment (TSE) object from .qza artifacts
-#' \code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}}
+#' Generates a \code{\link[TreeSummarizedExperiment:SummarizedExperiment-class]{TreeSummarizedExperiment}} (TSE) object from .qza artifacts
 #'
 #' @details 
 #' Embedded metadata for provenance is maintained in this function and 
