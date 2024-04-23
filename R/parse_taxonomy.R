@@ -22,6 +22,7 @@ parse_taxonomy <- function(taxonomy, tax_sep, trim_extra){
   if(trim_extra){
   taxonomy$Taxon<-gsub("[kpcofgs]__","", taxonomy$Taxon) #remove leading characters from GG
   taxonomy$Taxon<-gsub("D_\\d__","", taxonomy$Taxon) #remove leading characters from SILVA
+  taxonomy$Taxon<-gsub("D_|d__","", taxonomy$Taxon) #remove leading characters from SILVA
   }
   taxonomy<-suppressWarnings(taxonomy %>% separate(Taxon, c("Kingdom","Phylum","Class","Order","Family","Genus","Species"), sep=tax_sep))
   taxonomy<-apply(taxonomy, 2, function(x) if_else(x=="", NA_character_, x)) 
