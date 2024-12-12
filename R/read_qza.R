@@ -73,6 +73,12 @@ if(grepl("BIOMV", artifact$format)){
   coltitles<-strsplit(suppressWarnings(readLines(paste0(tmp, "/", artifact$uuid, "/data/differentials.tsv"))[1]), split='\t')[[1]]
   artifact$data<-read.table(paste0(tmp, "/", artifact$uuid, "/data/differentials.tsv"), header=F, col.names=coltitles, skip=2, sep='\t', colClasses = defline, check.names = FALSE)
   colnames(artifact$data)[1]<-"Feature.ID"
+} else if (artifact$format=="DataLoafPackageDirFmt") {
+  for (outs in list.files(paste0(tmp, "/", artifact$uuid, "/data"), full.names = TRUE, pattern = "_slice\\.csv$")){
+    NewLab<-gsub("_slice\\.csv$", "", basename(outs))
+    artifact$data[[NewLab]]<-read.table(outs, sep=",", header=TRUE)
+    colnames(artifact$data[[NewLab]])<-gsub("X.Intercept.", "Intercept", colnames(artifact$data[[NewLab]]))
+  }
 } else {
   message("Format not supported, only a list of internal files and provenance is being imported.")
   artifact$data<-list.files(paste0(tmp,"/",artifact$uuid, "/data"))
